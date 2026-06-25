@@ -1,0 +1,2710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<!-- ============================================================
+     SECURITY POSTURE (single-file static demo)
+     - CSP below locks sources to self + Google Fonts + jsdelivr (pinned three.js).
+     - All dynamic rendering escapes &<>"' ; user input never reaches innerHTML unescaped.
+     - localStorage cart stores only {id, qty}; names/prices/images are ALWAYS
+       re-derived from the frozen in-page MENU, so stored data cannot inject content.
+     - For production, additionally send as HTTP headers (meta CSP cannot express these):
+         Content-Security-Policy: ... ; frame-ancestors 'none'
+         Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+         X-Content-Type-Options: nosniff
+         Referrer-Policy: strict-origin-when-cross-origin
+         Permissions-Policy: camera=(), microphone=(), geolocation=()
+       and consider self-hosting three.js with Subresource Integrity.
+     ============================================================ -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://cdn.jsdelivr.net blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<meta name="theme-color" content="#0c0b09">
+<meta name="color-scheme" content="dark">
+<title>Harlem House Sheffield | Halal Smash Burgers, Cheesesteaks & Loaded Fries</title>
+<meta name="description" content="Harlem House — American-style halal comfort food in Sheffield. Angus smash burgers, Philly cheesesteaks, loaded fries, shakes & desserts. 4.9★ on Google. Two locations, open till late.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.harlemhouse.co.uk/">
+<link rel="icon" type="image/webp" href="assets/img/real/logo.webp">
+<link rel="apple-touch-icon" href="assets/img/real/logo.webp">
+<link rel="preload" as="image" href="assets/img/real/logo.webp">
+
+<!-- Open Graph / social sharing -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Harlem House">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Harlem House Sheffield | Halal Smash Burgers & Cheesesteaks">
+<meta property="og:description" content="Angus smash burgers, Philly cheesesteaks, loaded fries, shakes & desserts — 100% halal, made fresh in Sheffield. 4.9★ on Google.">
+<meta property="og:url" content="https://www.harlemhouse.co.uk/">
+<meta property="og:image" content="assets/img/real/smash-c.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Harlem House Sheffield | Halal Smash Burgers & Cheesesteaks">
+<meta name="twitter:description" content="Angus smash burgers, Philly cheesesteaks, loaded fries & shakes — 100% halal, Sheffield. 4.9★ on Google.">
+<meta name="twitter:image" content="assets/img/real/smash-c.webp">
+
+<!-- Fonts: 2 families, minimal weights, swap so text is never invisible -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ================================================================
+   TOKENS — semantic, single source of truth
+   ================================================================ */
+:root{
+  --bg:#0c0b09;
+  --bg-2:#12100c;
+  --surface:#171511;
+  --surface-2:#1f1c16;
+  --surface-3:#272318;
+  --cream:#f6f1e6;
+  --muted:#b9b09c;
+  --gold:#f2b705;
+  --gold-2:#ffd23f;
+  --gold-deep:#a87e04;
+  --gold-soft:rgba(242,183,5,.12);
+  --ember:#dc2626;
+  --ember-hot:#ef4444;
+  --green:#34d058;
+  --amber:#f59e0b;
+  --line:rgba(246,241,230,.11);
+  --line-soft:rgba(246,241,230,.06);
+  --max:1180px;
+  --r-sm:10px; --r:16px; --r-lg:22px;
+  --shadow-1:0 10px 30px -14px rgba(0,0,0,.7);
+  --shadow-2:0 26px 60px -24px rgba(0,0,0,.85);
+  --shadow-3:0 44px 100px -36px rgba(0,0,0,.92);
+  /* premium depth & lighting */
+  --glass-hi:rgba(255,255,255,.07);          /* inner top highlight on glass/cards */
+  --glass-hi-strong:rgba(255,255,255,.13);
+  --glass-lo:rgba(0,0,0,.32);                /* inner bottom shade */
+  --ring-gold:rgba(242,183,5,.55);
+  --glow-gold:0 30px 80px -34px rgba(242,183,5,.27);
+  --glow-gold-soft:0 18px 50px -28px rgba(242,183,5,.19);
+  --glow-ember:0 26px 70px -30px rgba(220,38,38,.33);
+  --ease:cubic-bezier(.22,.7,.25,1);
+  --spring:cubic-bezier(.3,1.4,.4,1);
+  /* z-scale */
+  --z-grain:60; --z-rail:90; --z-nav:100; --z-bar:110; --z-fab:120; --z-hover:150;
+  --z-drawer:200; --z-modal:210; --z-help:215; --z-checkout:220; --z-toast:240; --z-loader:300;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:86px;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--cream);
+  font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:16.5px;line-height:1.6;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--gold);color:#1a1305}
+img{max-width:100%;display:block}
+[hidden]{display:none!important}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;color:inherit}
+button,a,input,label{touch-action:manipulation}
+input{font-family:inherit}
+.display{font-family:'Anton',Impact,sans-serif;font-weight:400;letter-spacing:.01em;line-height:.92}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:6px}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:8px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#3a3424}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 clamp(18px,5vw,48px)}
+section{position:relative}
+.skip{position:fixed;left:14px;top:-60px;z-index:calc(var(--z-loader) + 1);background:var(--gold);color:#1a1305;font-weight:700;padding:12px 20px;border-radius:10px;transition:top .25s var(--ease)}
+.skip:focus-visible{top:14px}
+
+/* film grain — fixed, decorative, under nav/overlays */
+.grain{position:fixed;inset:-50%;z-index:var(--z-grain);pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* scroll progress */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:calc(var(--z-nav) + 1);pointer-events:none}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-2));transform:scaleX(0);transform-origin:0 50%;box-shadow:0 0 14px rgba(242,183,5,.5)}
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+.btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:50px;padding:0 26px;border-radius:12px;border:1.5px solid transparent;
+  font-weight:700;font-size:15.5px;letter-spacing:.02em;line-height:1;white-space:nowrap;
+  transition:transform .22s var(--spring),background .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease;
+  overflow:hidden;
+}
+.btn:active{transform:scale(.97)}
+.btn .ar{transition:transform .22s var(--ease)}
+.btn:hover .ar{transform:translateX(4px)}
+.btn-primary{background:var(--ember);color:#fff;box-shadow:0 14px 34px -14px rgba(220,38,38,.75)}
+.btn-primary:hover{background:var(--ember-hot);transform:translateY(-2px);box-shadow:0 18px 40px -14px rgba(239,68,68,.8)}
+.btn-ghost{border-color:rgba(246,241,230,.28);color:var(--cream)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#e3a904);color:#1a1305;box-shadow:0 14px 34px -16px rgba(242,183,5,.55)}
+.btn-gold:hover{background:linear-gradient(135deg,var(--gold-2),var(--gold));transform:translateY(-2px)}
+.btn-primary::after,.btn-gold::after{
+  content:"";position:absolute;top:0;bottom:0;left:-70%;width:36%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.34),transparent);
+  transform:skewX(-22deg);transition:left .6s var(--ease);
+}
+.btn-primary:hover::after,.btn-gold:hover::after{left:135%}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none}
+
+/* ================================================================
+   NAV
+   ================================================================ */
+nav.site{
+  position:fixed;top:0;left:0;right:0;z-index:var(--z-nav);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px clamp(18px,5vw,48px);
+  border-bottom:1px solid transparent;
+  transition:background .35s ease,border-color .35s ease,padding .35s ease,box-shadow .35s ease;
+}
+nav.site.scrolled{background:rgba(12,11,9,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom-color:var(--line);padding-top:9px;padding-bottom:9px;box-shadow:var(--shadow-1)}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-logo{height:46px;width:auto;display:block;mix-blend-mode:screen}
+.brand .nm{font-family:'Anton',sans-serif;font-size:19px;line-height:.84;letter-spacing:.02em}
+.brand .nm b{display:block;color:var(--gold);font-size:12px;letter-spacing:.1em}
+.nav-links{display:flex;align-items:center;gap:clamp(14px,2.2vw,30px);list-style:none}
+.nav-links a:not(.btn){font-weight:600;font-size:13.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--cream);position:relative;padding:8px 2px}
+.nav-links a:not(.btn)::after{content:"";position:absolute;left:0;bottom:2px;height:2px;width:0;background:var(--gold);transition:width .3s var(--ease)}
+.nav-links a:not(.btn):hover,.nav-links a:not(.btn).active{color:var(--gold)}
+.nav-links a:not(.btn):hover::after,.nav-links a:not(.btn).active::after{width:100%}
+.nav-links .btn{min-height:44px;padding:0 20px;text-transform:none;font-size:14.5px}
+.burger{display:none;flex-direction:column;justify-content:center;gap:5.5px;background:none;border:none;padding:10px;z-index:calc(var(--z-nav) + 2);min-width:46px;min-height:46px}
+.burger span{width:26px;height:2.5px;background:var(--cream);border-radius:2px;transition:transform .3s var(--ease),opacity .2s}
+.nav-scrim{position:fixed;inset:0;z-index:calc(var(--z-nav) - 1);background:rgba(6,5,4,.6);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s}
+.nav-scrim.show{opacity:1;visibility:visible}
+@media (max-width:880px){
+  /* the scrolled nav's backdrop-filter would make the bar a containing block for the
+     fixed dropdown (clipping it to the bar height) — drop it so the panel fills the viewport */
+  nav.site.scrolled{backdrop-filter:none;-webkit-backdrop-filter:none}
+  .nav-links{
+    position:fixed;top:0;right:0;bottom:0;width:min(82vw,320px);
+    background:linear-gradient(160deg,var(--surface),var(--bg-2));
+    flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:clamp(14px,3.2vh,24px);
+    transform:translateX(102%);transition:transform .42s var(--ease);
+    box-shadow:-30px 0 70px rgba(0,0,0,.6);
+    padding:calc(76px + env(safe-area-inset-top)) 34px calc(28px + env(safe-area-inset-bottom));
+    z-index:calc(var(--z-nav) + 1);
+    overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  }
+  .nav-links.open{transform:none}
+  .nav-links a:not(.btn){font-size:clamp(18px,2.6vh,21px);letter-spacing:.06em}
+  .nav-links li{width:100%}
+  .nav-links .btn{font-size:17px;min-height:52px;width:100%}
+  .nav-links .nav-social{display:flex;gap:10px;margin-top:auto;padding-top:12px}
+  .burger{display:flex}
+  .burger.open span:nth-child(1){transform:translateY(8px) rotate(45deg)}
+  .burger.open span:nth-child(2){opacity:0}
+  .burger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+}
+@media (min-width:881px){.nav-links .nav-social{display:none}}
+.nav-social a{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border:1px solid var(--line);border-radius:12px;color:var(--muted)}
+.nav-social a:hover{color:var(--gold);border-color:var(--gold)}
+
+/* ================================================================
+   HERO
+   ================================================================ */
+.hero{
+  min-height:100svh;display:flex;align-items:center;position:relative;overflow:hidden;
+  padding:118px 0 64px;
+  background:
+    radial-gradient(90% 70% at 82% 28%, rgba(242,183,5,.13), transparent 60%),
+    radial-gradient(70% 70% at 12% 88%, rgba(220,38,38,.10), transparent 55%),
+    linear-gradient(180deg,#0c0b09,#16130d 55%,#0c0b09);
+}
+.hero-ghost{
+  position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) rotate(-4deg);
+  font-family:'Anton',sans-serif;font-size:clamp(7rem,24vw,21rem);line-height:1;
+  color:transparent;-webkit-text-stroke:1.5px rgba(242,183,5,.09);
+  letter-spacing:.04em;user-select:none;pointer-events:none;white-space:nowrap;z-index:0;
+}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:14px;align-items:center;width:100%;position:relative;z-index:2}
+@media (min-width:881px){.hero-grid{grid-template-columns:0.9fr 1.18fr;gap:clamp(14px,2.4vw,40px)}}
+.hero-inner{position:relative;z-index:4;animation:heroIn 1s var(--ease) both}
+@keyframes heroIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  font-weight:700;letter-spacing:.18em;text-transform:uppercase;font-size:12px;color:var(--gold);
+  margin-bottom:18px;
+}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--gold)}
+.hero h1{font-family:'Anton',sans-serif;font-size:clamp(3rem,12vw,6.4rem);line-height:.9;text-transform:uppercase;letter-spacing:.005em;
+  text-shadow:0 2px 0 #2c2a24,0 4px 0 #201e19,0 6px 0 #151310,0 9px 0 #0e0d0b,0 22px 42px rgba(0,0,0,.72);}
+.hero h1 em{font-style:normal;color:var(--gold);
+  text-shadow:0 2px 0 #c19104,0 4px 0 #9c7503,0 6px 0 #7a5a03,0 9px 0 #5c4502,0 0 56px rgba(242,183,5,.28),0 20px 40px rgba(0,0,0,.6);}
+.hero .lede{max-width:44ch;color:var(--muted);font-size:clamp(1.04rem,2.1vw,1.22rem);margin:20px 0 28px}
+.hero .lede b{color:var(--cream);font-weight:600}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(23,21,17,.8);border:1px solid var(--line);backdrop-filter:blur(6px);
+  padding:10px 16px;border-radius:50px;font-size:13.5px;color:var(--muted);min-height:40px;
+}
+.pill b{color:var(--cream)}
+.pill .star{color:var(--gold)}
+.pill .dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
+.pill.is-open .dot{background:var(--green);box-shadow:0 0 0 4px rgba(52,208,88,.16);animation:dotPulse 2.4s ease-in-out infinite}
+.pill.is-open b{color:var(--green)}
+.pill.is-soon .dot{background:var(--amber);box-shadow:0 0 0 4px rgba(245,158,11,.16)}
+.pill.is-soon b{color:var(--amber)}
+.pill.is-closed .dot{background:var(--ember-hot)}
+.pill.is-closed b{color:var(--ember-hot)}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 0 3px rgba(52,208,88,.18)}50%{box-shadow:0 0 0 6px rgba(52,208,88,.06)}}
+.hero-scrolldown{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);font-size:11px;letter-spacing:.22em;text-transform:uppercase;pointer-events:none}
+.hero-scrolldown i{display:block;width:1.5px;height:34px;background:linear-gradient(180deg,var(--gold),transparent);animation:dropline 1.8s var(--ease) infinite}
+@keyframes dropline{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@media (max-width:880px){
+  .hero{min-height:0;padding:104px 0 56px}
+  .hero-scrolldown{display:none}
+  .hero-ghost{top:30%}
+}
+
+/* hero 3D stage */
+.hero-stage{position:relative;width:100%;aspect-ratio:1/1;max-height:min(72vh,620px);z-index:3}
+@media (max-width:880px){.hero-stage{max-width:420px;margin:0 auto}}
+.hero-stage::before{
+  content:"";position:absolute;inset:5%;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(50% 50% at 50% 55%,rgba(242,183,5,.2),transparent 70%);
+  animation:stageGlow 5s ease-in-out infinite;
+}
+@keyframes stageGlow{0%,100%{opacity:.36;transform:scale(.96)}50%{opacity:.66;transform:scale(1.05)}}
+.hero-stage .ring{position:absolute;inset:8%;border-radius:50%;border:1px dashed rgba(242,183,5,.22);pointer-events:none;z-index:1;animation:ringSpin 40s linear infinite}
+@keyframes ringSpin{to{transform:rotate(360deg)}}
+.steam{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:visible}
+.steam i{position:absolute;bottom:18%;width:34px;height:90px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(246,241,230,.13),transparent 70%);
+  filter:blur(7px);opacity:0;animation:steamUp 5.5s ease-in-out infinite}
+.steam i:nth-child(1){left:34%;animation-delay:0s}
+.steam i:nth-child(2){left:50%;animation-delay:1.8s;height:120px}
+.steam i:nth-child(3){left:62%;animation-delay:3.4s}
+@keyframes steamUp{0%{transform:translateY(10px) scaleX(1);opacity:0}25%{opacity:.85}100%{transform:translateY(-130px) scaleX(1.7);opacity:0}}
+.poster{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:opacity .6s ease;z-index:2}
+.poster svg{width:86%;max-width:430px;height:auto;filter:drop-shadow(0 30px 40px rgba(0,0,0,.5))}
+.is-3d .poster{opacity:0;pointer-events:none}
+.three-canvas{position:absolute;inset:0;width:100%!important;height:100%!important;z-index:2}
+.spin-hint{
+  position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:4;
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  background:rgba(12,11,9,.6);border:1px solid var(--line);padding:8px 14px;border-radius:50px;
+  pointer-events:none;opacity:0;transition:opacity .5s ease .2s;
+}
+.is-3d .spin-hint{opacity:1}
+.stamp{position:absolute;top:-4%;right:-2%;width:clamp(86px,12vw,124px);z-index:5;pointer-events:none;animation:stampSpin 16s linear infinite;filter:drop-shadow(0 10px 22px rgba(0,0,0,.5))}
+@keyframes stampSpin{to{transform:rotate(360deg)}}
+.sparks{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.sparks i{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:0;filter:blur(.5px);box-shadow:0 0 8px rgba(242,183,5,.55);animation:spark 7s linear infinite}
+.sparks i:nth-child(1){left:12%;bottom:8%;animation-delay:0s}
+.sparks i:nth-child(2){left:30%;bottom:4%;animation-delay:1.6s}
+.sparks i:nth-child(3){left:56%;bottom:10%;animation-delay:3.1s}
+.sparks i:nth-child(4){left:74%;bottom:5%;animation-delay:4.4s}
+.sparks i:nth-child(5){left:88%;bottom:12%;animation-delay:5.7s}
+@keyframes spark{0%{transform:translateY(0) scale(.6);opacity:0}12%{opacity:.85}60%{opacity:.4}100%{transform:translateY(-72vh) scale(1.15);opacity:0}}
+
+/* ================================================================
+   MARQUEE
+   ================================================================ */
+.marquee{position:relative;z-index:95;background:linear-gradient(90deg,var(--gold),var(--gold-2),var(--gold));color:#1a1305;overflow:hidden;padding:15px 0;border-top:2px solid #000;border-bottom:2px solid #000;box-shadow:0 12px 34px -14px rgba(242,183,5,.45)}
+.marquee .track{display:flex;width:max-content;animation:scrollx 34s linear infinite;will-change:transform}
+.marquee:hover .track{animation-play-state:paused}
+.marquee span{font-family:'Anton',sans-serif;font-size:clamp(1.05rem,2.4vw,1.6rem);text-transform:uppercase;display:flex;align-items:center;white-space:nowrap}
+.marquee span:nth-child(even){color:transparent;-webkit-text-stroke:1.5px #1a1305}
+.marquee span::after{content:"◆";font-size:.5em;margin:0 30px;color:#1a1305;-webkit-text-stroke:0;transform:translateY(-.12em)}
+@keyframes scrollx{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ================================================================
+   SECTION SHELL
+   ================================================================ */
+.pad{padding:clamp(68px,10vw,130px) 0}
+.sec-head{margin-bottom:clamp(34px,6vw,58px);max-width:680px}
+.kicker{display:inline-flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;font-size:12.5px;color:var(--gold);margin-bottom:14px}
+.kicker::before{content:"";width:30px;height:2px;background:var(--gold)}
+.sec-title{font-family:'Anton',sans-serif;font-size:clamp(2.15rem,6.5vw,4rem);line-height:.96;text-transform:uppercase;
+  text-shadow:0 1px 0 #2c2a24,0 2px 0 #232119,0 3px 0 #1a1814,0 5px 0 #12110d,0 12px 26px rgba(0,0,0,.6);}
+.sec-title em{color:var(--gold);font-style:normal;
+  text-shadow:0 1px 0 #c19104,0 2px 0 #a87e04,0 3px 0 #8a6703,0 5px 0 #6b5002,0 10px 24px rgba(242,183,5,.2),0 14px 30px rgba(0,0,0,.55);}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .85s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ================================================================
+   ABOUT
+   ================================================================ */
+.about{background:linear-gradient(180deg,var(--bg),var(--bg-2))}
+.about-grid{display:grid;grid-template-columns:1fr;gap:40px;align-items:center}
+@media (min-width:841px){.about-grid{grid-template-columns:1.05fr .95fr;gap:clamp(34px,6vw,72px)}}
+.about p{color:var(--muted);font-size:clamp(1.04rem,1.6vw,1.16rem);margin-bottom:18px;max-width:54ch}
+.about p b{color:var(--cream);font-weight:600}
+.about p .hl{color:var(--gold);font-weight:600}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.stat{background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r);padding:clamp(22px,3vw,32px);text-align:center;position:relative;overflow:hidden}
+.stat::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6}
+.stat .n{font-family:'Anton',sans-serif;font-size:clamp(2.1rem,5vw,3.2rem);color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.stat .l{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:9px}
+
+/* ================================================================
+   MENU
+   ================================================================ */
+.menu{background:var(--bg-2)}
+.menu-bar{position:sticky;top:64px;z-index:5;background:rgba(18,16,12,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);margin:0 -8px 28px;padding:10px 8px;border-radius:14px}
+.menu-tabs{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.menu-tabs::-webkit-scrollbar{height:0}
+.menu-tab{
+  flex:none;scroll-snap-align:start;display:inline-flex;align-items:center;gap:8px;
+  min-height:46px;padding:0 19px;border-radius:50px;
+  border:1.5px solid var(--line);background:transparent;color:var(--muted);
+  font-weight:600;font-size:14.5px;letter-spacing:.02em;white-space:nowrap;
+  transition:color .2s,border-color .2s,background .25s var(--ease),transform .2s var(--spring);
+}
+.menu-tab .ct{font-size:11.5px;font-weight:700;background:var(--surface-3);border-radius:50px;padding:2px 8px;color:var(--muted);transition:inherit}
+.menu-tab:hover{color:var(--cream);border-color:rgba(246,241,230,.3)}
+.menu-tab:active{transform:scale(.96)}
+.menu-tab[aria-selected="true"]{background:var(--gold);color:#1a1305;border-color:var(--gold);font-weight:700}
+.menu-tab[aria-selected="true"] .ct{background:rgba(26,19,5,.18);color:#1a1305}
+.menu-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:640px){.menu-grid{grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:16px}}
+.dish{
+  position:relative;display:flex;gap:14px;align-items:stretch;text-align:left;
+  background:linear-gradient(165deg,var(--surface),var(--surface-2));
+  border:1px solid var(--line-soft);border-radius:var(--r);
+  padding:12px;overflow:hidden;
+  transition:transform .25s var(--ease),border-color .25s ease,box-shadow .25s ease;
+  animation:dishIn .55s var(--ease) both;animation-delay:var(--d,0ms);
+}
+@keyframes dishIn{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+.dish:hover{transform:translateY(-4px);border-color:var(--line);box-shadow:var(--shadow-2)}
+.dish-media{position:relative;flex:none;width:96px;border-radius:11px;overflow:hidden;background:radial-gradient(80% 80% at 50% 42%,#1b1810,#000);border:1px solid var(--line-soft)}
+.dish-media img{width:100%;height:100%;object-fit:contain;padding:5px;transition:filter .4s var(--ease),transform .5s var(--ease)}
+.dish:hover .dish-media img{filter:brightness(1.08) saturate(1.05);transform:scale(1.03)}
+.dish-body{flex:1;min-width:0;display:flex;flex-direction:column;padding:4px 4px 4px 0}
+.dish-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:5px}
+.dish-name{font-weight:700;font-size:1.06rem;line-height:1.22}
+.dish-price{font-family:'Anton',sans-serif;font-size:1.18rem;color:var(--gold);flex:none;font-variant-numeric:tabular-nums}
+.dish-desc{font-size:.9rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.dish-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:12px;flex-wrap:nowrap;min-height:44px}
+.dish-media .tag{position:absolute;top:9px;left:9px;z-index:3}
+.tag{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#1a1305;background:var(--gold);padding:4px 9px;border-radius:6px}
+.tag.spice{background:var(--ember);color:#fff}
+.tag svg{flex:none}
+.dish-details{position:static;background:none;border:none;font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);padding:6px 0;margin-left:0;flex:none}
+.dish-details::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.dish-add{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:38px;min-width:106px;box-sizing:border-box;flex:none;padding:0 14px;border-radius:50px;border:1.5px solid rgba(242,183,5,.5);background:rgba(242,183,5,.08);color:var(--gold);font-weight:700;font-size:13px;transition:background .2s,color .2s,transform .15s var(--spring)}
+.dish-add:hover{background:var(--gold);color:#1a1305}
+.dish-add:active{transform:scale(.93)}
+.dish-stepper{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:space-between;gap:2px;min-width:106px;box-sizing:border-box;flex:none;background:rgba(242,183,5,.12);border:1.5px solid rgba(242,183,5,.55);border-radius:50px;padding:2px}
+.dish-stepper .ds-btn{width:34px;height:34px;border-radius:50%;border:none;background:transparent;color:var(--gold);font-size:18px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s,transform .12s var(--spring)}
+.dish-stepper .ds-btn:hover{background:var(--gold);color:#1a1305}
+.dish-stepper .ds-btn:active{transform:scale(.9)}
+.dish-stepper .ds-q{min-width:22px;text-align:center;font-weight:700;font-size:.92rem;color:var(--gold);font-variant-numeric:tabular-nums}
+@media (min-width:640px){
+  .dish{flex-direction:column;gap:0;padding:0}
+  .dish-media{width:100%;aspect-ratio:4/3;border-radius:0;border:none;border-bottom:1px solid var(--line-soft)}
+  .dish-body{padding:16px 16px 14px}
+}
+.menu-note{margin-top:30px;text-align:center;color:var(--muted);font-size:.95rem}
+.menu-note b{color:var(--gold)}
+
+/* ================================================================
+   SIGNATURE — photo-led showpiece (the one 3D moment lives in the hero)
+   ================================================================ */
+.signature{background:linear-gradient(180deg,var(--bg-2),var(--bg));overflow:hidden}
+.sig-row{display:grid;grid-template-columns:1fr;gap:34px;align-items:center}
+@media (min-width:841px){.sig-row{grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,64px)}}
+.sig-stage{position:relative;width:100%;aspect-ratio:1/1;max-height:540px;border-radius:24px;overflow:visible}
+.sig-stage::before{content:"";position:absolute;inset:4%;border-radius:50%;background:radial-gradient(50% 50% at 50% 55%,rgba(242,183,5,.22),transparent 70%);animation:stageGlow 5s ease-in-out infinite}
+.sig-chip{position:absolute;z-index:3;display:inline-flex;align-items:center;gap:7px;background:rgba(12,11,9,.82);backdrop-filter:blur(8px);border:1px solid rgba(242,183,5,.4);color:var(--cream);font-weight:700;font-size:12.5px;letter-spacing:.04em;padding:9px 14px;border-radius:50px;box-shadow:var(--shadow-1);animation:chipFloat 6s ease-in-out infinite}
+.sig-chip b{color:var(--gold)}
+.sig-chip.c1{top:15%;left:1%;animation-delay:.2s}
+.sig-chip.c2{top:46%;right:-1%;animation-delay:1.4s}
+.sig-chip.c3{bottom:21%;left:3%;animation-delay:2.6s}
+@keyframes chipFloat{0%,100%{transform:translateY(-5px)}50%{transform:translateY(5px)}}
+@media (max-width:640px){.sig-chip{font-size:11.5px;padding:8px 12px}.sig-chip.c1{left:2%;top:12%}.sig-chip.c2{right:2%}.sig-chip.c3{bottom:24%}}
+.sig-copy .sec-title{margin-bottom:16px}
+.sig-copy p{color:var(--muted);font-size:clamp(1.04rem,1.6vw,1.16rem);margin-bottom:22px;max-width:46ch}
+.sig-feats{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.sig-feat{display:flex;align-items:center;gap:13px;font-weight:600}
+.sig-feat .ic{width:40px;height:40px;flex:none;border-radius:12px;background:var(--gold-soft);border:1px solid rgba(242,183,5,.25);display:flex;align-items:center;justify-content:center;color:var(--gold)}
+
+/* ================================================================
+   GALLERY
+   ================================================================ */
+.gallery{background:var(--bg)}
+.gal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (min-width:861px){.gal-grid{grid-template-columns:repeat(4,1fr)}}
+.gal-item{position:relative;aspect-ratio:1/1;border-radius:14px;overflow:hidden;border:1px solid var(--line-soft);display:block;background:radial-gradient(85% 85% at 50% 40%,#1b1810,#000);padding:0;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.gal-item img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:7px;transition:transform .35s var(--ease),filter .4s var(--ease);will-change:transform}
+.gal-item:hover img{filter:brightness(1.05) saturate(1.04)}
+.gal-item::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,11,9,0) 38%,rgba(12,11,9,.88));z-index:1;transition:opacity .3s}
+.gal-item::before{content:"";position:absolute;inset:0;border-radius:inherit;border:1.5px solid transparent;z-index:3;transition:border-color .3s ease;pointer-events:none}
+.gal-item:hover::before{border-color:rgba(242,183,5,.55)}
+.gal-item .gtxt{position:absolute;left:14px;right:12px;bottom:12px;z-index:2;font-family:'Anton',sans-serif;font-size:clamp(.98rem,2vw,1.3rem);text-transform:uppercase;line-height:.95;text-shadow:0 2px 12px rgba(0,0,0,.7)}
+.gal-item .gview{position:absolute;top:10px;right:10px;z-index:2;width:34px;height:34px;border-radius:50%;background:rgba(12,11,9,.6);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--gold);opacity:0;transform:scale(.7);transition:opacity .25s,transform .25s var(--spring)}
+.gal-item:hover .gview,.gal-item:focus-visible .gview{opacity:1;transform:none}
+
+/* gallery hover preview card (desktop, mouse only) */
+.hovercard{position:fixed;z-index:var(--z-hover);width:300px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-2);overflow:hidden;pointer-events:none;opacity:0;transform:translateY(8px) scale(.97);transition:opacity .18s ease,transform .18s var(--ease)}
+.hovercard.show{opacity:1;transform:none}
+.hovercard img{width:100%;height:150px;object-fit:cover;background:#000;display:block}
+.hovercard .hc-body{padding:14px 16px 16px}
+.hovercard h4{font-family:'Anton',sans-serif;font-size:1.15rem;text-transform:uppercase;margin-bottom:2px}
+.hovercard .hc-note{font-size:.78rem;color:var(--muted);margin-bottom:10px}
+.hovercard .hc-item{display:flex;justify-content:space-between;gap:10px;font-size:.86rem;padding:4px 0;border-bottom:1px dashed var(--line-soft)}
+.hovercard .hc-item:last-child{border-bottom:none}
+.hovercard .hc-item .p{color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.hovercard .hc-cta{margin-top:10px;font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+
+/* ================================================================
+   REVIEWS — flowing rail
+   ================================================================ */
+.reviews{background:linear-gradient(180deg,var(--bg),var(--bg-2));overflow:hidden}
+.rev-banner{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:30px}
+.rev-score{display:flex;align-items:center;gap:14px;background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r);padding:16px 22px}
+.rev-score .num{font-family:'Anton',sans-serif;font-size:2.6rem;color:var(--gold);line-height:1}
+.rev-score .stars-svg{display:flex;gap:2px;color:var(--gold)}
+.rev-score small{display:block;color:var(--muted);font-size:.85rem;margin-top:2px}
+.rev-rail{display:flex;flex-direction:column;gap:14px;margin:0 calc(-1 * clamp(18px,5vw,48px))}
+.rev-row{display:flex;gap:14px;width:max-content;padding:0 7px;animation:revL 46s linear infinite}
+.rev-row[data-dir="r"]{animation:revR 54s linear infinite}
+.rev-rail:hover .rev-row,.rev-rail:focus-within .rev-row{animation-play-state:paused}
+@keyframes revL{to{transform:translateX(-50%)}}
+@keyframes revR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.rev{width:min(380px,82vw);flex:none;background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line-soft);border-radius:var(--r);padding:24px;position:relative;overflow:hidden}
+.rev::before{content:"“";position:absolute;top:-18px;right:10px;font-family:'Anton',sans-serif;font-size:7rem;color:rgba(242,183,5,.08);pointer-events:none}
+.rev .stars{color:var(--gold);letter-spacing:2px;margin-bottom:11px;font-size:.95rem}
+.rev p{font-size:1rem;line-height:1.6;margin-bottom:14px}
+.rev .who{font-weight:700;font-size:.84rem;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+
+/* ================================================================
+   LOCATIONS
+   ================================================================ */
+.locations{background:var(--bg-2)}
+.loc-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px}
+@media (min-width:741px){.loc-grid{grid-template-columns:1fr 1fr}}
+.loc{background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line-soft);border-radius:var(--r);padding:clamp(24px,3.5vw,34px);position:relative;overflow:hidden}
+.loc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--gold),transparent)}
+.loc-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.loc h3{font-family:'Anton',sans-serif;font-size:clamp(1.4rem,3vw,1.85rem);text-transform:uppercase}
+.loc .pc{color:var(--gold);font-weight:600;font-size:.92rem;letter-spacing:.04em;margin-bottom:16px}
+.loc .row{display:flex;align-items:flex-start;gap:11px;margin-bottom:11px;color:var(--muted);font-size:.97rem}
+.loc .row svg{flex:none;color:var(--gold);margin-top:2px}
+.loc .row a{min-height:44px;display:inline-flex;align-items:center}
+.loc .row a:hover{color:var(--gold)}
+.loc-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.loc-actions .btn{min-height:46px;padding:0 18px;font-size:14px;flex:1}
+.hours-strip{background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line-soft);border-radius:var(--r);padding:clamp(22px,3vw,30px)}
+.hours-strip h4{font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;font-size:1rem;display:flex;align-items:center;gap:9px}
+.hours-strip h4 svg{color:var(--gold)}
+.hours-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 24px}
+.hours-list .h{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:5px 0 7px;font-size:.95rem}
+.hours-list .h.today{border-bottom-color:var(--gold)}
+.hours-list .h .d{color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.hours-list .h.today .d{color:var(--gold);font-weight:700}
+.hours-list .h .t{font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ================================================================
+   CTA / ORDER
+   ================================================================ */
+.cta{text-align:center;background:radial-gradient(70% 120% at 50% 0%, rgba(242,183,5,.15), transparent 55%),var(--bg)}
+.cta h2{font-family:'Anton',sans-serif;font-size:clamp(2.4rem,8vw,5rem);line-height:.92;text-transform:uppercase;margin-bottom:14px;
+  text-shadow:0 2px 0 #2c2a24,0 4px 0 #1a1814,0 6px 0 #12110d,0 16px 32px rgba(0,0,0,.65)}
+.cta h2 em{color:var(--gold);font-style:normal;text-shadow:0 2px 0 #c19104,0 4px 0 #9c7503,0 6px 0 #7a5a03,0 8px 30px rgba(242,183,5,.26)}
+.cta p{max-width:46ch;margin:0 auto 30px;color:var(--muted);font-size:1.08rem}
+.cta-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.follow-row{margin-top:28px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.follow-row a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:50px;padding:10px 17px;font-weight:700;font-size:.9rem;color:var(--cream);transition:.22s;min-height:44px}
+.follow-row a:hover{background:var(--gold);color:#1a1305;border-color:var(--gold)}
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+footer{background:var(--bg-2);border-top:1px solid var(--line);padding:clamp(48px,7vw,72px) 0 30px}
+.foot-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-bottom:42px}
+.foot-brand{grid-column:1/-1}
+@media (min-width:741px){.foot-grid{grid-template-columns:1.5fr 1fr 1fr;gap:36px}.foot-brand{grid-column:auto}}
+.foot-brand .brand-logo{height:72px}
+.foot-brand p{color:var(--muted);max-width:34ch;font-size:.96rem;margin:16px 0}
+.socials{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.socials a{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:50px;padding:9px 16px 9px 11px;font-weight:700;font-size:.92rem;transition:.22s;min-height:44px}
+.socials a:hover{background:var(--gold);color:#1a1305;border-color:var(--gold)}
+.foot-col h3{font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;font-size:.95rem}
+.foot-col a{display:flex;align-items:center;color:var(--muted);margin-bottom:4px;font-size:.96rem;min-height:38px}
+.foot-col a:hover{color:var(--gold)}
+.foot-bottom{border-top:1px solid var(--line-soft);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;color:var(--muted);font-size:.85rem}
+.foot-bottom .halal{color:var(--gold);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+
+/* ================================================================
+   STICKY MOBILE ACTION BAR
+   ================================================================ */
+.actionbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:var(--z-bar);display:none;
+  grid-template-columns:1fr 1fr 1.2fr;gap:8px;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(12,11,9,.93);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);
+}
+.actionbar a{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  min-height:52px;border-radius:12px;font-weight:700;font-size:12.5px;
+  border:1.5px solid var(--line);color:var(--cream);
+}
+.actionbar a svg{width:19px;height:19px}
+.actionbar a.order{background:var(--ember);color:#fff;border-color:var(--ember)}
+@media (max-width:880px){
+  .actionbar{display:grid}
+  body{padding-bottom:80px}
+}
+
+/* ================================================================
+   TILT + GLARE (mouse only, motion-safe)
+   ================================================================ */
+.tilt{transform-style:preserve-3d;transition:transform .35s var(--ease);will-change:transform}
+.tilt.tilting{transition:transform .07s linear}
+.glx{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:6;opacity:0;transition:opacity .25s ease;background:radial-gradient(280px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.15),transparent 50%)}
+.tilting .glx{opacity:1}
+.rev,.loc{overflow:hidden}
+
+/* ================================================================
+   LOADER
+   ================================================================ */
+.loader{position:fixed;inset:0;z-index:var(--z-loader);background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .55s ease}
+.loader.gone{opacity:0;pointer-events:none}
+.loader .brand-logo{height:118px;animation:bob 1.3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(-7px)}50%{transform:translateY(7px)}}
+.loader .lt{font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);font-size:12px;animation:pulse 1.3s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+
+/* ================================================================
+   MODALS (dish detail + category variants)
+   ================================================================ */
+body.modal-open{overflow:hidden}
+.modal{position:fixed;inset:0;z-index:var(--z-modal);display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s}
+.modal.open{opacity:1;visibility:visible}
+.modal-scrim{position:absolute;inset:0;background:rgba(5,4,3,.76);backdrop-filter:blur(7px)}
+.modal-card{position:relative;z-index:1;width:min(760px,100%);max-height:90svh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-2);display:grid;grid-template-columns:1fr;transform:translateY(30px) scale(.96);transition:transform .35s var(--ease)}
+@media (min-width:641px){.modal-card{grid-template-columns:1fr 1fr}}
+.modal.open .modal-card{transform:none}
+.modal-media{position:relative;min-height:0;aspect-ratio:16/10;background:var(--surface-2)}
+@media (min-width:641px){.modal-media{aspect-ratio:auto;min-height:230px}}
+.modal-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.modal-body{padding:clamp(22px,3.2vw,34px);position:relative}
+.modal-x{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(12,11,9,.65);color:var(--cream);font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;z-index:3;transition:background .2s,border-color .2s,transform .2s var(--spring)}
+.modal-x:hover{background:var(--ember);border-color:var(--ember);color:#fff;transform:rotate(90deg)}
+.modal-tags{display:flex;gap:6px;margin-bottom:10px}
+.modal-body h3{font-family:'Anton',sans-serif;font-size:clamp(1.7rem,5vw,2.5rem);text-transform:uppercase;line-height:.95;margin-bottom:6px}
+.modal-price{font-family:'Anton',sans-serif;color:var(--gold);font-size:1.5rem;margin-bottom:14px}
+.modal-body>p{color:var(--muted);line-height:1.6;margin-bottom:20px}
+.modal-body h4{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.ing-list{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+.ing-list li{font-size:.88rem;color:var(--cream);background:var(--surface-2);border:1px solid var(--line);padding:7px 12px;border-radius:50px}
+.modal-body .btn{width:100%}
+
+/* category (variants) modal */
+.cat-card .modal-card{grid-template-columns:1fr;width:min(1020px,100%)}
+.cat-head{padding:clamp(22px,3.5vw,34px) clamp(22px,3.5vw,36px) 0}
+.cat-head h3{font-family:'Anton',sans-serif;font-size:clamp(1.9rem,5vw,2.8rem);text-transform:uppercase;line-height:.95}
+.cat-head .cat-note{color:var(--muted);font-size:1rem;margin-top:8px;max-width:62ch}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:18px;padding:clamp(22px,3.5vw,34px)}
+.vcard{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .22s var(--ease),border-color .22s ease,box-shadow .22s ease}
+.vcard:hover{transform:translateY(-4px);border-color:var(--line);box-shadow:var(--shadow-2)}
+.vcard img{width:100%;aspect-ratio:4/3;object-fit:contain;background:radial-gradient(80% 80% at 50% 45%,#16130c,#000);padding:10px}
+.vcard .v-body{padding:18px;display:flex;flex-direction:column;flex:1}
+.vcard .v-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.vcard h5{font-weight:700;font-size:1.05rem;text-transform:uppercase;letter-spacing:.02em}
+.vcard .v-price{font-family:'Anton',sans-serif;color:var(--gold);font-size:1.15rem;flex:none}
+.vcard p{font-size:.88rem;color:var(--muted);line-height:1.55;margin:8px 0 16px;flex:1}
+.vcard .v-actions{display:flex;gap:8px}
+.vcard .v-actions .btn{min-height:44px;padding:0 14px;font-size:13px;flex:1}
+
+/* ================================================================
+   CART FAB + DRAWER
+   ================================================================ */
+.cart-fab{position:fixed;right:16px;bottom:18px;z-index:var(--z-fab);display:flex;align-items:center;gap:9px;background:var(--ember);color:#fff;border:none;border-radius:50px;padding:14px 21px;font-weight:700;font-size:14.5px;box-shadow:0 16px 40px -12px rgba(220,38,38,.8);transition:transform .2s var(--spring),background .2s ease}
+.cart-fab:hover{background:var(--ember-hot);transform:translateY(-2px)}
+.cart-fab:active{transform:scale(.95)}
+.cart-fab .cart-count{background:#fff;color:var(--ember);border-radius:50px;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:12.5px;padding:0 6px;font-variant-numeric:tabular-nums}
+.cart-fab.bump{animation:bump .35s var(--spring)}
+@keyframes bump{30%{transform:scale(1.13)}}
+@media (max-width:880px){.cart-fab{bottom:calc(88px + env(safe-area-inset-bottom))}}
+.drawer{position:fixed;inset:0;z-index:var(--z-drawer);visibility:hidden}
+.drawer.open{visibility:visible}
+.drawer-scrim{position:absolute;inset:0;background:rgba(5,4,3,.7);backdrop-filter:blur(5px);opacity:0;transition:opacity .3s ease}
+.drawer.open .drawer-scrim{opacity:1}
+.drawer-panel{position:absolute;top:0;right:0;bottom:0;width:min(430px,100%);background:var(--surface);border-left:1px solid var(--line);display:flex;flex-direction:column;transform:translateX(102%);transition:transform .38s var(--ease)}
+.drawer.open .drawer-panel{transform:none}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line-soft)}
+.drawer-head h2{font-family:'Anton',sans-serif;font-size:1.45rem;text-transform:uppercase;display:flex;align-items:baseline;gap:9px}
+.drawer-head h2 small{font-family:'Space Grotesk';font-size:.85rem;color:var(--muted);text-transform:none;letter-spacing:0}
+.drawer-body{flex:1;overflow:auto;padding:14px 20px;overscroll-behavior:contain}
+.cart-line{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px dashed var(--line-soft);animation:lineIn .35s var(--ease) both}
+@keyframes lineIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.cart-line img{width:56px;height:56px;border-radius:10px;object-fit:cover;background:#000;flex:none;border:1px solid var(--line-soft)}
+.cart-line .cl-info{flex:1;min-width:0}
+.cart-line .cl-name{font-weight:700;font-size:.95rem;line-height:1.25}
+.cart-line .cl-price{color:var(--gold);font-weight:700;font-size:.9rem;font-variant-numeric:tabular-nums;margin-top:2px}
+.qty{display:flex;align-items:center;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:50px;padding:2px}
+.qty button{width:36px;height:36px;border-radius:50%;border:none;background:transparent;color:var(--cream);font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s,transform .12s var(--spring)}
+.qty button:hover{background:var(--gold);color:#1a1305}
+.qty button:active{transform:scale(.88)}
+.qty .q{min-width:26px;text-align:center;font-weight:700;font-size:.95rem;font-variant-numeric:tabular-nums}
+.cart-empty{text-align:center;color:var(--muted);padding:44px 10px}
+.cart-empty svg{margin:0 auto 14px;opacity:.55}
+.cart-empty .btn{margin-top:18px}
+.drawer-foot{border-top:1px solid var(--line-soft);padding:16px 20px calc(16px + env(safe-area-inset-bottom))}
+.minbar{margin-bottom:13px}
+.minbar .mb-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-bottom:6px}
+.minbar .mb-label b{color:var(--gold)}
+.minbar .mb-track{height:6px;border-radius:6px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line-soft)}
+.minbar .mb-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .5s var(--ease)}
+.subtotal{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;font-size:1.05rem;margin-bottom:12px}
+.subtotal .s{font-family:'Anton',sans-serif;color:var(--gold);font-size:1.35rem;font-variant-numeric:tabular-nums}
+.drawer-foot .btn{width:100%}
+.cart-note{font-size:.74rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+
+/* ================================================================
+   FULL-SCREEN CHECKOUT — one calm screen, zero gimmicks
+   ================================================================ */
+.checkout{position:fixed;inset:0;z-index:var(--z-checkout);background:
+  radial-gradient(70% 55% at 80% 0%,rgba(242,183,5,.12),transparent 60%),
+  radial-gradient(60% 50% at 8% 100%,rgba(220,38,38,.09),transparent 55%),var(--bg);
+  display:none;overflow:auto;overscroll-behavior:contain}
+.checkout.open{display:block;animation:coIn .45s var(--ease)}
+@keyframes coIn{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:none}}
+.co-top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:14px clamp(18px,4vw,44px);background:rgba(12,11,9,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.co-top .brand-logo{height:42px}
+.co-top h2{font-family:'Anton',sans-serif;font-size:1.45rem;text-transform:uppercase}
+.co-top .modal-x{position:static;margin-left:auto}
+.co-steps{display:flex;align-items:center;gap:7px;margin-left:6px}
+.co-step{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.co-step i{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;transition:.3s}
+.co-step.on{color:var(--gold)}
+.co-step.on i{border-color:var(--gold);background:var(--gold);color:#1a1305}
+.co-step.done i{border-color:var(--green);background:rgba(52,208,88,.15);color:var(--green)}
+.co-steps .sep{width:18px;height:1.5px;background:var(--line)}
+@media (max-width:640px){.co-steps{display:none}}
+.co-wrap{max-width:1080px;margin:0 auto;padding:clamp(20px,4vw,44px) clamp(16px,4vw,44px) 90px;display:grid;grid-template-columns:1fr;gap:clamp(16px,3vw,36px);align-items:start}
+@media (min-width:841px){.co-wrap{grid-template-columns:1fr 1.15fr}}
+.co-wrap>*{min-width:0}
+.co-panel{background:linear-gradient(170deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:20px;padding:clamp(20px,3vw,30px);box-shadow:var(--shadow-2)}
+.co-panel h3{font-family:'Anton',sans-serif;font-size:1.3rem;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:9px}
+.co-panel h3 svg{color:var(--gold)}
+.co-line{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px dashed var(--line-soft)}
+.co-line img{width:54px;height:54px;border-radius:10px;object-fit:cover;background:#000;flex:none;border:1px solid var(--line-soft)}
+.co-line .n{flex:1;font-weight:600;font-size:.93rem;min-width:0;line-height:1.3}
+.co-line .n small{display:block;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
+.co-line .p{font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;font-size:.95rem}
+.co-line .qty{transform:scale(.92)}
+.co-totals{margin-top:14px}
+.co-totals .subtotal{margin-bottom:4px}
+.co-trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.co-trust span{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:600;color:var(--muted);background:var(--surface-2);border:1px solid var(--line-soft);border-radius:50px;padding:7px 12px}
+.co-trust svg{color:var(--gold)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:5px;margin-bottom:16px;position:relative}
+.seg button{position:relative;z-index:1;min-width:0;border:none;background:transparent;color:var(--muted);font-weight:700;font-size:14.5px;padding:13px 6px;border-radius:10px;letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:8px;transition:color .25s}
+.seg button svg{flex:none}
+@media (max-width:420px){.seg button{font-size:12.5px;letter-spacing:.01em;gap:6px}}
+.seg button.on{color:#1a1305}
+.seg .seg-pill{position:absolute;top:5px;bottom:5px;left:5px;width:calc(50% - 8px);border-radius:10px;background:linear-gradient(135deg,var(--gold),#e3a904);transition:transform .35s var(--spring);z-index:0}
+.seg[data-on="1"] .seg-pill{transform:translateX(calc(100% + 6px))}
+.branch{display:grid;grid-template-columns:1fr;gap:9px;margin-bottom:16px}
+@media (min-width:520px){.branch{grid-template-columns:1fr 1fr}}
+.branch label{position:relative;display:flex;flex-direction:column;gap:3px;background:var(--surface-2);border:1.5px solid var(--line);border-radius:13px;padding:13px 15px;cursor:pointer;transition:border-color .2s,background .2s}
+.branch label:hover{border-color:rgba(242,183,5,.4)}
+.branch input{position:absolute;opacity:0;pointer-events:none}
+.branch b{font-size:.95rem}
+.branch small{color:var(--muted);font-size:.8rem}
+.branch input:checked + b{color:var(--gold)}
+.branch label:has(input:checked){border-color:var(--gold);background:rgba(242,183,5,.07)}
+.branch input:focus-visible ~ small{outline:2px solid var(--gold);outline-offset:8px;border-radius:4px}
+.co-fields{display:flex;flex-direction:column;gap:13px;margin:4px 0 16px}
+.field label{display:block;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.field input{width:100%;background:var(--surface-2);border:1.5px solid var(--line);border-radius:11px;color:var(--cream);font:inherit;font-size:16px;padding:12px 14px;min-height:48px;transition:border-color .2s,box-shadow .2s}
+.field input::placeholder{color:rgba(185,176,156,.5)}
+.field input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(242,183,5,.15)}
+.field.bad input{border-color:var(--ember-hot);box-shadow:0 0 0 3px rgba(239,68,68,.12)}
+.field .err{display:none;color:#ff9b9b;font-size:.8rem;margin-top:6px}
+.field.bad .err{display:block}
+.hp{position:absolute;left:-9999px;top:-9999px;height:0;width:0;overflow:hidden}
+.co-banner{display:flex;align-items:flex-start;gap:10px;background:rgba(242,183,5,.09);border:1px solid rgba(242,183,5,.35);color:var(--gold);font-weight:600;font-size:.9rem;border-radius:12px;padding:12px 15px;margin-bottom:14px;line-height:1.45}
+.co-banner.warn{background:rgba(220,38,38,.1);border-color:rgba(220,38,38,.45);color:#ff9b9b}
+.co-banner .mb-track{margin-top:8px;height:5px;border-radius:5px;background:rgba(0,0,0,.35);overflow:hidden}
+.co-banner .mb-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .5s var(--ease)}
+.co-banner.warn .mb-fill{background:linear-gradient(90deg,#ff7b6b,#ffb46b)}
+.co-eta{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin:2px 0 16px;font-size:.92rem;color:var(--cream)}
+.co-eta svg{color:var(--gold);flex:none}
+.co-eta b{color:var(--gold)}
+.co-check{display:flex;align-items:center;gap:10px;margin:2px 0 16px;color:var(--muted);font-size:.92rem;cursor:pointer;min-height:44px}
+.co-check input{width:20px;height:20px;accent-color:var(--gold);cursor:pointer;flex:none}
+.co-place{width:100%;min-height:56px;font-size:16.5px}
+.co-note{font-size:.74rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
+.co-done{text-align:center;padding:9vh 18px 70px;max-width:560px;margin:0 auto}
+.co-done .ok{width:84px;height:84px;margin:0 auto}
+.co-done .ok circle{stroke:var(--green);stroke-dasharray:166;stroke-dashoffset:166;animation:okDraw .7s var(--ease) forwards}
+.co-done .ok path{stroke:var(--green);stroke-dasharray:48;stroke-dashoffset:48;animation:okDraw .45s var(--ease) .55s forwards}
+@keyframes okDraw{to{stroke-dashoffset:0}}
+.co-done .big{font-family:'Anton',sans-serif;font-size:clamp(2rem,6vw,3.2rem);text-transform:uppercase;color:var(--gold);margin:18px 0 8px;text-shadow:0 2px 0 #a87e04,0 4px 0 #7a5a03,0 10px 28px rgba(242,183,5,.35)}
+.co-done p{color:var(--muted);line-height:1.65;margin-bottom:8px}
+.co-done .ref{font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:.06em}
+.co-done .btn{margin-top:22px}
+
+/* ================================================================
+   SUPPORT HUB
+   ================================================================ */
+.help-fab{position:fixed;left:16px;bottom:18px;z-index:var(--z-fab);display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;border:1px solid rgba(242,183,5,.5);background:rgba(23,21,17,.42);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--gold);box-shadow:var(--shadow-1);transition:transform .2s var(--spring),background .2s,color .2s}
+.help-fab:hover{background:var(--gold);color:#1a1305;transform:translateY(-2px)}
+.help-fab:active{transform:scale(.93)}
+@media (max-width:880px){.help-fab{bottom:calc(88px + env(safe-area-inset-bottom))}}
+@media (max-width:1100px){.help-fab{left:12px}}
+.help{position:fixed;inset:0;z-index:var(--z-help);visibility:hidden}
+.help.open{visibility:visible}
+.help-scrim{position:absolute;inset:0;background:rgba(5,4,3,.62);backdrop-filter:blur(4px);opacity:0;transition:opacity .3s}
+.help.open .help-scrim{opacity:1}
+.help-card{position:absolute;left:16px;bottom:84px;width:min(400px,calc(100vw - 32px));max-height:min(76svh,640px);overflow:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-2);transform:translateY(18px) scale(.97);opacity:0;transition:transform .32s var(--spring),opacity .25s ease}
+.help.open .help-card{transform:none;opacity:1}
+@media (max-width:560px){
+  .help-card{left:0;right:0;bottom:0;width:100%;max-height:84svh;border-radius:22px 22px 0 0;border-bottom:none;padding-bottom:env(safe-area-inset-bottom)}
+}
+.help-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 20px 14px;background:var(--surface);border-bottom:1px solid var(--line-soft)}
+.help-head h2{font-family:'Anton',sans-serif;font-size:1.35rem;text-transform:uppercase}
+.help-head .modal-x{position:static}
+.help-body{padding:16px 20px 22px}
+.help-status{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--muted);margin-bottom:14px}
+.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
+.help-grid a{display:flex;flex-direction:column;gap:5px;background:var(--surface-2);border:1px solid var(--line);border-radius:13px;padding:13px 14px;min-height:64px;transition:border-color .2s,background .2s,transform .18s var(--spring)}
+.help-grid a:hover{border-color:rgba(242,183,5,.5);background:rgba(242,183,5,.06)}
+.help-grid a:active{transform:scale(.97)}
+.help-grid a svg{color:var(--gold)}
+.help-grid a b{font-size:.88rem;line-height:1.2}
+.help-grid a small{color:var(--muted);font-size:.74rem}
+.help-body h3{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:4px 0 10px}
+.faq{border:1px solid var(--line-soft);border-radius:13px;background:var(--surface-2);margin-bottom:8px;overflow:hidden}
+.faq summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;font-weight:600;font-size:.94rem;cursor:pointer;min-height:50px;transition:color .2s}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .pm{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:inline-flex;align-items:center;justify-content:center;color:var(--gold);transition:transform .25s var(--ease),background .2s}
+.faq summary:hover{color:var(--gold)}
+.faq[open] summary{color:var(--gold)}
+.faq[open] summary .pm{transform:rotate(45deg);background:var(--gold-soft)}
+.faq .fa{padding:0 16px 15px;color:var(--muted);font-size:.9rem;line-height:1.6}
+.faq .fa b{color:var(--cream)}
+.help-foot{margin-top:14px;font-size:.8rem;color:var(--muted);line-height:1.55;border-top:1px dashed var(--line-soft);padding-top:13px}
+.help-foot b{color:var(--gold)}
+
+/* ================================================================
+   SOCIAL SIDE RAIL (desktop)
+   ================================================================ */
+.social-rail{position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:var(--z-rail);display:flex;flex-direction:column;gap:10px}
+.social-rail a{display:flex;align-items:center;width:46px;height:46px;border-radius:50px;border:1px solid var(--line);background:rgba(12,11,9,.7);backdrop-filter:blur(8px);color:var(--cream);overflow:hidden;white-space:nowrap;transition:width .3s var(--ease),background .25s,color .25s;padding:0 12px}
+.social-rail a svg{flex:none}
+.social-rail a span{opacity:0;margin-left:9px;font-weight:700;font-size:.85rem;transition:opacity .25s}
+.social-rail a:hover,.social-rail a:focus-visible{width:178px;background:var(--gold);color:#1a1305;border-color:var(--gold)}
+.social-rail a:hover span,.social-rail a:focus-visible span{opacity:1}
+@media (max-width:1100px){.social-rail{display:none}}
+
+/* ================================================================
+   TOAST
+   ================================================================ */
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);z-index:var(--z-toast);display:flex;align-items:center;gap:12px;background:var(--gold);color:#1a1305;font-weight:700;font-size:14px;padding:11px 18px;border-radius:50px;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s var(--ease);box-shadow:0 14px 40px -10px rgba(0,0,0,.7)}
+.toast.show{opacity:1;pointer-events:auto;transform:translateX(-50%)}
+.toast button{background:#1a1305;color:var(--gold);border:none;border-radius:50px;font-weight:700;font-size:12.5px;padding:7px 13px;letter-spacing:.04em;text-transform:uppercase}
+@media (max-width:880px){.toast{bottom:152px;width:max-content;max-width:calc(100vw - 28px)}}
+
+/* ================================================================
+   REDUCED MOTION
+   The owner's explicit brand direction is an assertive, motion-led
+   showpiece (marquee, parallax, tilt, spinning 3D). We honour that as
+   the intended experience for everyone. We still drop the single thing
+   that can actually disorient — long programmatic smooth-scroll — and
+   guarantee no content depends on motion to become visible.
+   ================================================================ */
+/* ================================================================
+   ✦ PREMIUM POLISH LAYER
+   Layers depth, glassmorphism, lighting & micro-interaction refinement
+   on top of the existing system. Colour identity, copy, menu, layout
+   and behaviour are all unchanged — this only elevates presentation.
+   ================================================================ */
+
+/* ---- ambient light seam at the top edge of each major section ---- */
+.about,.menu,.signature,.gallery,.reviews,.locations{position:relative}
+.about::after,.menu::after,.signature::after,.gallery::after,.reviews::after,.locations::after{
+  content:"";position:absolute;left:0;right:0;top:0;height:1px;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(246,241,230,.16),transparent);
+}
+
+/* ---- buttons: a "lit" top highlight + deeper, softer layered shadow ---- */
+.btn-primary{box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -10px 22px -14px rgba(0,0,0,.5),0 14px 34px -14px rgba(220,38,38,.55)}
+.btn-primary:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 22px 48px -16px rgba(239,68,68,.6)}
+.btn-gold{box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -10px 20px -12px rgba(124,90,4,.4),0 14px 34px -16px rgba(242,183,5,.4)}
+.btn-gold:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 22px 48px -18px rgba(242,183,5,.5)}
+.btn-ghost{background:linear-gradient(180deg,rgba(246,241,230,.05),rgba(246,241,230,.01));box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.btn-ghost:hover{background:linear-gradient(180deg,rgba(242,183,5,.10),rgba(242,183,5,.02));box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 14px 30px -18px rgba(242,183,5,.4)}
+
+/* ---- nav: refined frosted glass once scrolled ---- */
+nav.site.scrolled{
+  background:linear-gradient(180deg,rgba(18,16,12,.86),rgba(12,11,9,.74));
+  backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);
+  box-shadow:inset 0 1px 0 var(--glass-hi),var(--shadow-1);
+}
+/* CRITICAL (mobile): a scrolled nav with backdrop-filter becomes the containing
+   block for the fixed slide-in menu and clips it to the bar height after you
+   scroll. Keep the frosted glass on desktop only so the menu always fills the
+   viewport on phones/tablets. */
+@media (max-width:880px){
+  nav.site.scrolled{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+}
+.brand-logo{filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+
+/* ---- pills & chips: frosted glass with an inner highlight ---- */
+.pill{
+  background:linear-gradient(180deg,rgba(30,27,20,.72),rgba(18,16,12,.62));
+  backdrop-filter:blur(12px) saturate(1.3);-webkit-backdrop-filter:blur(12px) saturate(1.3);
+  box-shadow:inset 0 1px 0 var(--glass-hi),0 8px 22px -16px rgba(0,0,0,.8);
+}
+.sig-chip{
+  background:linear-gradient(180deg,rgba(20,18,13,.9),rgba(12,11,9,.78));
+  box-shadow:inset 0 1px 0 var(--glass-hi),0 14px 34px -16px rgba(0,0,0,.7),0 0 0 1px rgba(242,183,5,.06);
+}
+
+/* ---- tags: glossy enamel chips ---- */
+.tag{box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 14px -6px rgba(242,183,5,.55)}
+.tag.spice{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 6px 14px -6px rgba(220,38,38,.6)}
+
+/* ---- generic card depth: dish · stat · loc · rev · vcard · co-panel ---- */
+.dish,.stat,.loc,.rev,.vcard,.co-panel,.hours-strip,.rev-score{
+  box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 0 0 1px rgba(255,255,255,.012),var(--shadow-1);
+}
+.dish:hover{box-shadow:inset 0 1px 0 var(--glass-hi-strong),var(--shadow-3),var(--glow-gold-soft)}
+.vcard:hover,.loc:hover{box-shadow:inset 0 1px 0 var(--glass-hi-strong),var(--shadow-3),var(--glow-gold-soft)}
+.loc{transition:transform .25s var(--ease),border-color .25s ease,box-shadow .3s ease}
+.loc:hover{transform:translateY(-4px);border-color:var(--line)}
+.stat{transition:transform .3s var(--ease),box-shadow .3s ease,border-color .3s ease}
+.stat:hover{transform:translateY(-4px);border-color:rgba(242,183,5,.3);box-shadow:inset 0 1px 0 var(--glass-hi-strong),var(--shadow-2),var(--glow-gold-soft)}
+.stat .n{text-shadow:0 0 30px rgba(242,183,5,.22)}
+
+/* ---- image containers: inner ring, vignette & a gloss sweep on hover ---- */
+.dish-media{box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),inset 0 -24px 40px -28px rgba(0,0,0,.9)}
+.dish-media::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(120deg,transparent 38%,rgba(255,255,255,.10) 48%,transparent 58%);
+  transform:translateX(-120%);transition:transform .7s var(--ease);
+}
+.dish:hover .dish-media::after{transform:translateX(120%)}
+.gal-item{box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),0 18px 40px -26px rgba(0,0,0,.85)}
+.gal-item .gtxt{transition:transform .35s var(--ease)}
+.gal-item:hover .gtxt{transform:translateY(-3px)}
+.gal-item .gview{background:linear-gradient(180deg,rgba(20,18,13,.85),rgba(12,11,9,.7));box-shadow:inset 0 1px 0 var(--glass-hi),0 6px 16px -8px rgba(0,0,0,.7)}
+
+/* ---- menu category bar: deeper frosted glass + active tab glow ---- */
+.menu-bar{
+  background:linear-gradient(180deg,rgba(24,21,15,.92),rgba(16,14,10,.82));
+  backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
+  box-shadow:inset 0 1px 0 var(--glass-hi),0 16px 34px -24px rgba(0,0,0,.8);
+  border:1px solid var(--line-soft);
+}
+.menu-tab[aria-selected="true"]{box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 20px -8px rgba(242,183,5,.55)}
+
+/* ---- reviews score badge + flame numbers ---- */
+.rev-score .num,.rev-banner .num{text-shadow:0 0 28px rgba(242,183,5,.26)}
+.rev::before{transition:color .4s var(--ease)}
+.rev:hover::before{color:rgba(242,183,5,.16)}
+
+/* ---- marquee: subtle top gloss for an enamel feel ---- */
+.marquee{box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -3px 8px -3px rgba(124,90,4,.34),0 12px 34px -14px rgba(242,183,5,.3)}
+
+/* ---- floating action / fabs: glassy ember + gold ---- */
+.cart-fab{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),var(--glow-ember)}
+.cart-fab:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.32),0 22px 54px -14px rgba(239,68,68,.85)}
+.help-fab{box-shadow:inset 0 1px 0 var(--glass-hi),0 10px 26px -12px rgba(0,0,0,.7)}
+
+/* ---- overlays: drawer · modals · checkout · help — premium glass panels ---- */
+.drawer-panel,.help-card{box-shadow:inset 0 1px 0 var(--glass-hi),-30px 0 80px -30px rgba(0,0,0,.85),var(--shadow-3)}
+.modal-card{box-shadow:inset 0 1px 0 var(--glass-hi),var(--shadow-3)}
+.modal-scrim,.drawer-scrim,.help-scrim{backdrop-filter:blur(9px) saturate(1.1);-webkit-backdrop-filter:blur(9px) saturate(1.1)}
+.co-panel{box-shadow:inset 0 1px 0 var(--glass-hi),var(--shadow-2)}
+.modal-media::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(12,11,9,.18),transparent 30%,transparent 70%,rgba(12,11,9,.34))}
+
+/* ---- HERO: floating ambient light orbs for layered depth (behind all content) ---- */
+.hero-orbs{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.hero-orbs i{position:absolute;border-radius:50%;filter:blur(64px);mix-blend-mode:screen;will-change:transform;animation:orbDrift 19s ease-in-out infinite}
+.hero-orbs i:nth-child(1){width:380px;height:380px;left:-7%;top:6%;background:radial-gradient(circle,rgba(242,183,5,.34),transparent 70%);opacity:.29}
+.hero-orbs i:nth-child(2){width:300px;height:300px;right:-5%;bottom:4%;background:radial-gradient(circle,rgba(220,38,38,.3),transparent 70%);opacity:.26;animation-delay:-6.5s}
+.hero-orbs i:nth-child(3){width:240px;height:240px;left:44%;top:58%;background:radial-gradient(circle,rgba(255,210,63,.27),transparent 70%);opacity:.2;animation-delay:-12s}
+@keyframes orbDrift{0%,100%{transform:translate3d(0,0,0) scale(1)}33%{transform:translate3d(26px,-32px,0) scale(1.08)}66%{transform:translate3d(-22px,18px,0) scale(.94)}}
+@media (max-width:880px){.hero-orbs i{filter:blur(48px)}.hero-orbs i:nth-child(3){display:none}}
+
+/* ---- HERO: deeper immersion — soft vignette + a glowing pedestal under the burger ---- */
+.hero::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 80% at 50% 8%,transparent 55%,rgba(8,7,5,.5) 100%);
+}
+.hero-stage::after{
+  content:"";position:absolute;left:50%;bottom:6%;width:62%;height:8%;z-index:0;pointer-events:none;
+  transform:translateX(-50%);border-radius:50%;
+  background:radial-gradient(closest-side,rgba(242,183,5,.2),rgba(242,183,5,.04) 60%,transparent 78%);
+  filter:blur(7px);animation:padGlow 5s ease-in-out infinite;
+}
+@keyframes padGlow{0%,100%{opacity:.32;transform:translateX(-50%) scaleX(.92)}50%{opacity:.55;transform:translateX(-50%) scaleX(1.04)}}
+.eyebrow{padding:7px 14px;border-radius:50px;background:linear-gradient(180deg,rgba(242,183,5,.12),rgba(242,183,5,.04));border:1px solid rgba(242,183,5,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.eyebrow::before{margin-right:1px}
+
+/* ---- kicker eyebrow on section heads: matching glass token ---- */
+.kicker{padding:6px 13px;border-radius:50px;background:linear-gradient(180deg,rgba(242,183,5,.1),rgba(242,183,5,.03));border:1px solid rgba(242,183,5,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+
+/* ---- sig feature icons: glassy gold tiles ---- */
+.sig-feat .ic{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 18px -10px rgba(242,183,5,.5)}
+.sig-feat{transition:transform .25s var(--ease)}
+.sig-feat:hover .ic{transform:translateY(-2px) scale(1.06)}
+
+/* ---- glare overlay: a touch warmer for the gold theme ---- */
+.glx{background:radial-gradient(300px circle at var(--gx,50%) var(--gy,50%),rgba(255,236,190,.18),transparent 50%)}
+
+/* ---- reveal: add a hint of scale/blur for a more cinematic entrance ---- */
+.reveal{filter:blur(6px)}
+.reveal.in{filter:blur(0);transition:opacity .8s ease,transform .85s var(--ease),filter .8s ease}
+
+/* ---- loader: glow under the bobbing logo ---- */
+.loader{background:radial-gradient(60% 50% at 50% 46%,rgba(242,183,5,.08),transparent 60%),var(--bg)}
+.loader .brand-logo{filter:drop-shadow(0 24px 40px rgba(242,183,5,.28))}
+
+/* keep heavy blur off the lowest-power phones for smoothness */
+@media (max-width:560px){
+  .pill,.menu-bar{backdrop-filter:blur(8px) saturate(1.2);-webkit-backdrop-filter:blur(8px) saturate(1.2)}
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .hero-stage::after,.hero-orbs i{animation:none}
+  .reveal{filter:none}
+  .dish-media::after{display:none}
+}
+</style>
+</head>
+<body id="top">
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+
+<!-- ===================== LOADER ===================== -->
+<div class="loader" id="loader" aria-hidden="true">
+  <img src="assets/img/real/logo.webp" class="brand-logo" alt="" width="360" height="312">
+  <div class="lt">Firing up the grill…</div>
+</div>
+
+<!-- ===================== NAV ===================== -->
+<nav class="site" id="nav" aria-label="Main">
+  <a href="#top" class="brand" aria-label="Harlem House home">
+    <img src="assets/img/real/logo.webp" class="brand-logo" alt="Harlem House" width="360" height="312">
+    <span class="nm">HARLEM<b>HOUSE</b></span>
+  </a>
+  <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="navlinks">
+    <li><a href="#menu" data-spy>Menu</a></li>
+    <li><a href="#signature" data-spy>Signature</a></li>
+    <li><a href="#reviews" data-spy>Reviews</a></li>
+    <li><a href="#locations" data-spy>Find us</a></li>
+    <li><a href="#order" class="btn btn-primary">Order now</a></li>
+    <li class="nav-social">
+      <a href="https://instagram.com/harlemhous3" target="_blank" rel="noopener noreferrer" aria-label="Harlem House on Instagram"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+      <a href="https://tiktok.com/@harlemhouse1" target="_blank" rel="noopener noreferrer" aria-label="Harlem House on TikTok"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.3a4.8 4.8 0 0 1-3.3-1.3 4.8 4.8 0 0 1-1.4-2.7h-3.3v13.1a2.6 2.6 0 1 1-2.6-2.6c.2 0 .5 0 .7.1V9.5a6 6 0 0 0-.7 0 5.9 5.9 0 1 0 5.9 5.9V8.8a8 8 0 0 0 4.7 1.5V6.3z"/></svg></a>
+    </li>
+  </ul>
+</nav>
+<div class="nav-scrim" id="navScrim" aria-hidden="true"></div>
+
+<!-- ===================== SOCIAL SIDE RAIL ===================== -->
+<div class="social-rail" aria-label="Follow Harlem House">
+  <a href="https://instagram.com/harlemhous3" target="_blank" rel="noopener noreferrer" aria-label="Instagram — @harlemhous3"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg><span>@harlemhous3</span></a>
+  <a href="https://tiktok.com/@harlemhouse1" target="_blank" rel="noopener noreferrer" aria-label="TikTok — @harlemhouse1"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.3a4.8 4.8 0 0 1-3.3-1.3 4.8 4.8 0 0 1-1.4-2.7h-3.3v13.1a2.6 2.6 0 1 1-2.6-2.6c.2 0 .5 0 .7.1V9.5a6 6 0 0 0-.7 0 5.9 5.9 0 1 0 5.9 5.9V8.8a8 8 0 0 0 4.7 1.5V6.3z"/></svg><span>@harlemhouse1</span></a>
+</div>
+
+<main id="main">
+
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <div class="hero-orbs" aria-hidden="true"><i></i><i></i><i></i></div>
+  <span class="hero-ghost" aria-hidden="true">HARLEM</span>
+  <div class="sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="wrap hero-grid">
+    <div class="hero-inner">
+      <p class="eyebrow">Sheffield · 100% Halal · Made fresh in house</p>
+      <h1>Stacked.<br>Saucy.<br><em>Sheffield.</em></h1>
+      <p class="lede">American-style halal comfort food done right — <b>Philly cheesesteaks, chopped cheese, loaded fries</b> and smash burgers, all made fresh, to order.</p>
+      <div class="hero-cta">
+        <a href="#order" class="btn btn-primary">Order now <span class="ar">→</span></a>
+        <a href="#menu" class="btn btn-ghost">See the menu</a>
+      </div>
+      <div class="hero-meta">
+        <span class="pill"><span class="star" aria-hidden="true">★</span> <b>4.9</b>&nbsp;· 450+ Google reviews</span>
+        <span class="pill status" id="heroStatus" aria-live="polite"><span class="dot"></span> <b>Checking hours…</b></span>
+      </div>
+    </div>
+    <div id="heroScene" class="hero-stage burger3d" aria-label="Interactive 3D smash burger — drag to spin">
+      <span class="ring" aria-hidden="true"></span>
+      <div class="steam" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="poster" id="posterDish"></div>
+      <svg class="stamp" viewBox="0 0 120 120" aria-hidden="true">
+        <defs><path id="stampPath" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs>
+        <circle cx="60" cy="60" r="56" fill="rgba(12,11,9,.78)" stroke="rgba(242,183,5,.5)" stroke-width="1.5"/>
+        <circle cx="60" cy="60" r="32" fill="none" stroke="rgba(242,183,5,.35)" stroke-width="1" stroke-dasharray="3 5"/>
+        <text fill="#f2b705" font-family="'Space Grotesk',sans-serif" font-weight="700" font-size="11.5" letter-spacing="2.5">
+          <textPath href="#stampPath">100% HALAL · MADE FRESH · SHEFFIELD ·</textPath>
+        </text>
+        <text x="60" y="66" text-anchor="middle" fill="#f6f1e6" font-family="Anton,sans-serif" font-size="17">4.9★</text>
+      </svg>
+      <span class="spin-hint">↻ Drag to spin</span>
+    </div>
+  </div>
+  <div class="hero-scrolldown" aria-hidden="true"><span>Scroll</span><i></i></div>
+</header>
+
+<!-- ===================== MARQUEE ===================== -->
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <span>Philly Cheesesteak</span><span>Chopped Cheese</span><span>Loaded Fries</span><span>Smash Burgers</span><span>Chicken &amp; Waffles</span><span>Harlem Shakes</span>
+    <span data-dupe>Philly Cheesesteak</span><span data-dupe>Chopped Cheese</span><span data-dupe>Loaded Fries</span><span data-dupe>Smash Burgers</span><span data-dupe>Chicken &amp; Waffles</span><span data-dupe>Harlem Shakes</span>
+  </div>
+</div>
+
+<!-- ===================== ABOUT ===================== -->
+<section class="about pad" id="about">
+  <div class="wrap about-grid">
+    <div class="reveal">
+      <div class="kicker">The House</div>
+      <h2 class="sec-title">Comfort food<br><em>cooked with love</em></h2>
+      <p style="margin-top:24px">Harlem House brings a slice of American street food to Sheffield — melt-in-the-mouth Philly cheesesteaks, gooey chopped cheese, and loaded fries piled high. <span class="hl">Every dish is made fresh, to order, in house.</span></p>
+      <p>Tender meats, soft brioche-style bread, and signature house sauces that make every bite hit different. <b>Halal, generous, and seriously good.</b></p>
+    </div>
+    <div class="stats reveal">
+      <div class="stat"><div class="n" data-count="4.9" data-decimals="1" data-suffix="★">4.9★</div><div class="l">Google Rating</div></div>
+      <div class="stat"><div class="n" data-count="2">2</div><div class="l">Sheffield Spots</div></div>
+      <div class="stat"><div class="n" data-count="100" data-suffix="%">100%</div><div class="l">Halal</div></div>
+      <div class="stat"><div class="n" data-count="12" data-suffix="am">12am</div><div class="l">Open Late</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MENU ===================== -->
+<section class="menu pad" id="menu">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">The Menu</div>
+      <h2 class="sec-title">Built to <em>devour</em></h2>
+    </div>
+    <div class="menu-bar reveal">
+      <div class="menu-tabs" id="menuTabs" role="tablist" aria-label="Menu categories"></div>
+    </div>
+    <div class="menu-grid" id="menuGrid" role="tabpanel" aria-label="Dishes"></div>
+    <noscript><p class="menu-note">Our interactive menu needs JavaScript — or just call us on <a href="tel:+441146985495" style="color:var(--gold)">0114 698 5495</a> and we'll talk you through it.</p></noscript>
+    <p class="menu-note">Prices are a guide and may vary in store. Allergen info available on request. <b>Everything halal.</b></p>
+  </div>
+</section>
+
+<!-- ===================== SIGNATURE (photo showpiece — the one 3D moment lives in the hero) ===================== -->
+<section class="signature pad" id="signature">
+  <div class="wrap sig-row">
+    <div class="sig-stage reveal burger3d" id="sigScene" aria-label="Interactive 3D smash burger — drag to spin">
+      <span class="ring" aria-hidden="true"></span>
+      <div class="steam" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="poster" id="sigPoster"></div>
+      <span class="spin-hint">↻ Drag to spin</span>
+      <span class="sig-chip c1"><b>2×</b> Angus patties</span>
+      <span class="sig-chip c2">Crispy <b>lacy edges</b></span>
+      <span class="sig-chip c3"><b>House sauce</b> · brioche</span>
+    </div>
+    <div class="sig-copy reveal">
+      <div class="kicker">Signature</div>
+      <h2 class="sec-title">The Harlem<br><em>Smash Stack</em></h2>
+      <p>Double smashed patties with crispy lacy edges, melted American cheese and our slightly-spicy house sauce in soft brioche. The one people cross the city for.</p>
+      <div class="sig-feats">
+        <div class="sig-feat"><span class="ic" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16M4 11a8 8 0 0 1 16 0M5 15h14a2 2 0 0 1 0 4H5a2 2 0 0 1 0-4z"/></svg>
+        </span> Smashed-to-order patties</div>
+        <div class="sig-feat"><span class="ic" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5-9 5-9-5zM3 8v8l9 5 9-5V8"/></svg>
+        </span> Proper cheese pull</div>
+        <div class="sig-feat"><span class="ic" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1.5 3-1 4 0 7 .8 2.4 3 3 3 6a4 4 0 0 1-8 0c0-2 1-3 1-5"/></svg>
+        </span> Signature house sauce</div>
+      </div>
+      <a href="#order" class="btn btn-gold">Order one now <span class="ar">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== GALLERY ===================== -->
+<section class="gallery pad" id="gallery">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">The Spread</div>
+      <h2 class="sec-title">Feast your <em>eyes</em></h2>
+    </div>
+    <!-- Real Harlem House photography. Hover for an instant preview; click to browse & order that range. -->
+    <div class="gal-grid">
+      <button type="button" class="gal-item reveal" data-cat="smash"><img src="assets/img/real/smash-c.webp" width="640" height="640" loading="lazy" decoding="async" alt="El Classico 2.0 — double Angus smash burger in a sesame brioche bun"><span class="gview" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg></span><span class="gtxt">Harlem<br>Smashes</span></button>
+      <button type="button" class="gal-item reveal" data-cat="steaks"><img src="assets/img/real/cheesesteak.webp" width="640" height="640" loading="lazy" decoding="async" alt="Sheffield cheesesteak in toasted brioche, cut in half"><span class="gview" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg></span><span class="gtxt">Cheese<br>Steaks</span></button>
+      <button type="button" class="gal-item reveal" data-cat="fries"><img src="assets/img/real/fries-steak-mac.webp" width="640" height="640" loading="lazy" decoding="async" alt="Loaded fries with steak and mac and cheese"><span class="gview" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg></span><span class="gtxt">Loaded<br>Fries</span></button>
+      <button type="button" class="gal-item reveal" data-cat="chicken"><img src="assets/img/real/burger-chicken.webp" width="640" height="640" loading="lazy" decoding="async" alt="Crispy chicken burger"><span class="gview" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg></span><span class="gtxt">Crispy<br>Chicken</span></button>
+      <button type="button" class="gal-item reveal" data-cat="shakes"><img src="assets/img/real/biscoff.webp" width="640" height="640" loading="lazy" decoding="async" alt="Biscoff shake in a Harlem House branded cup"><span class="gview" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg></span><span class="gtxt">Harlem<br>Shakes</span></button>
+      <button type="button" class="gal-item reveal" data-cat="sides"><img src="assets/img/real/cake.webp" width="640" height="640" loading="lazy" decoding="async" alt="Mississippi Mudpie slice with chocolate mousse layers"><span class="gview" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg></span><span class="gtxt">Fresh<br>Desserts</span></button>
+      <button type="button" class="gal-item reveal" data-cat="smash"><img src="assets/img/real/smash-a.webp" width="640" height="640" loading="lazy" decoding="async" alt="Mac N'Smash — smash burger topped with mac and cheese"><span class="gview" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg></span><span class="gtxt">Mac N'<br>Smash</span></button>
+      <button type="button" class="gal-item reveal" data-cat="chicken"><img src="assets/img/real/edited4.webp" width="640" height="640" loading="lazy" decoding="async" alt="Kids box with tenders, fries, Fruit Shoot and a Kinder Surprise"><span class="gview" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg></span><span class="gtxt">Kids<br>Box</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REVIEWS ===================== -->
+<section class="reviews pad" id="reviews">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-bottom:26px">
+      <div class="kicker">The Word on the Street</div>
+      <h2 class="sec-title">People are <em>obsessed</em></h2>
+    </div>
+    <div class="rev-banner reveal">
+      <div class="rev-score">
+        <span class="num">4.9</span>
+        <span>
+          <span class="stars-svg" aria-label="Rated 4.9 out of 5 stars">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+          </span>
+          <small>450+ Google reviews · Sheffield</small>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="rev-rail reveal" id="revRail"></div>
+</section>
+
+<!-- ===================== LOCATIONS ===================== -->
+<section class="locations pad" id="locations">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Find Us</div>
+      <h2 class="sec-title">Two spots in <em>Sheffield</em></h2>
+    </div>
+    <div class="loc-grid">
+      <div class="loc reveal">
+        <div class="loc-head">
+          <h3>Infirmary Road</h3>
+          <span class="pill status loc-status"><span class="dot"></span> <b>—</b></span>
+        </div>
+        <div class="pc">158 Infirmary Rd · Sheffield · S6 3DH</div>
+        <div class="row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:+441146985495">0114 698 5495</a></div>
+        <div class="row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> <span>Seating Area Available</span></div>
+        <div class="loc-actions">
+          <a class="btn btn-gold" href="tel:+441146985495">Call</a>
+          <a class="btn btn-ghost" href="https://maps.google.com/?q=158+Infirmary+Rd+Sheffield+S6+3DH" target="_blank" rel="noopener noreferrer">Directions <span class="ar">→</span></a>
+        </div>
+      </div>
+      <div class="loc reveal">
+        <div class="loc-head">
+          <h3>St Mary's Road</h3>
+          <span class="pill status loc-status"><span class="dot"></span> <b>—</b></span>
+        </div>
+        <div class="pc">156 St Mary's Rd · Sheffield · S2 4AX</div>
+        <div class="row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:+441146986432">0114 698 6432</a></div>
+        <div class="row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> <span>Sisters' seating area available</span></div>
+        <div class="loc-actions">
+          <a class="btn btn-gold" href="tel:+441146986432">Call</a>
+          <a class="btn btn-ghost" href="https://maps.google.com/?q=156+St+Marys+Rd+Sheffield+S2+4AX" target="_blank" rel="noopener noreferrer">Directions <span class="ar">→</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="hours-strip reveal">
+      <h4><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Opening Hours</h4>
+      <div class="hours-list" id="hoursList">
+        <div class="h" data-day="1"><span class="d">Mon</span><span class="t">12pm – 12am</span></div>
+        <div class="h" data-day="2"><span class="d">Tue</span><span class="t">12pm – 12am</span></div>
+        <div class="h" data-day="3"><span class="d">Wed</span><span class="t">12pm – 12am</span></div>
+        <div class="h" data-day="4"><span class="d">Thu</span><span class="t">12pm – 12am</span></div>
+        <div class="h" data-day="5"><span class="d">Fri</span><span class="t">3pm – 12:30am</span></div>
+        <div class="h" data-day="6"><span class="d">Sat</span><span class="t">12pm – 12:30am</span></div>
+        <div class="h" data-day="0"><span class="d">Sun</span><span class="t">12pm – 12am</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA / ORDER ===================== -->
+<section class="cta pad" id="order">
+  <div class="wrap">
+    <h2>Hungry <em>yet?</em></h2>
+    <p>Order online for delivery or collection, or just roll through. Either way — you're eating good tonight.</p>
+    <div class="cta-actions">
+      <button type="button" class="btn btn-primary" id="ctaOrder">Start an order <span class="ar">→</span></button>
+      <a href="https://www.just-eat.co.uk/restaurants-harlem-house-sheffield" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Just Eat</a>
+      <a href="https://www.ubereats.com" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Uber Eats</a>
+      <a href="tel:+441146985495" class="btn btn-gold">Call to order</a>
+    </div>
+    <div class="follow-row">
+      <a href="https://instagram.com/harlemhous3" target="_blank" rel="noopener noreferrer" aria-label="Harlem House on Instagram"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>@harlemhous3</a>
+      <a href="https://tiktok.com/@harlemhouse1" target="_blank" rel="noopener noreferrer" aria-label="Harlem House on TikTok"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.6 6.3a4.8 4.8 0 0 1-3.3-1.3 4.8 4.8 0 0 1-1.4-2.7h-3.3v13.1a2.6 2.6 0 1 1-2.6-2.6c.2 0 .5 0 .7.1V9.5a6 6 0 0 0-.7 0 5.9 5.9 0 1 0 5.9 5.9V8.8a8 8 0 0 0 4.7 1.5V6.3z"/></svg>@harlemhouse1</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#top" class="brand" aria-label="Harlem House home">
+          <img src="assets/img/real/logo.webp" class="brand-logo" alt="Harlem House" width="360" height="312">
+        </a>
+        <p>Sheffield's home of American-style halal comfort food. Cheesesteaks, smash burgers, loaded fries — made fresh, served with love.</p>
+        <div class="socials">
+          <a href="https://instagram.com/harlemhous3" target="_blank" rel="noopener noreferrer" aria-label="Harlem House on Instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg><span>@harlemhous3 · Instagram</span></a>
+          <a href="https://tiktok.com/@harlemhouse1" target="_blank" rel="noopener noreferrer" aria-label="Harlem House on TikTok"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.6 6.3a4.8 4.8 0 0 1-3.3-1.3 4.8 4.8 0 0 1-1.4-2.7h-3.3v13.1a2.6 2.6 0 1 1-2.6-2.6c.2 0 .5 0 .7.1V9.5a6 6 0 0 0-.7 0 5.9 5.9 0 1 0 5.9 5.9V8.8a8 8 0 0 0 4.7 1.5V6.3z"/></svg><span>@harlemhouse1 · TikTok</span></a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h3>Explore</h3>
+        <a href="#about">About us</a>
+        <a href="#menu">Full menu</a>
+        <a href="#signature">Signature smash</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#locations">Locations</a>
+      </div>
+      <div class="foot-col">
+        <h3>Visit</h3>
+        <a href="https://maps.google.com/?q=158+Infirmary+Rd+Sheffield+S6+3DH" target="_blank" rel="noopener noreferrer">158 Infirmary Rd, S6 3DH</a>
+        <a href="https://maps.google.com/?q=156+St+Marys+Rd+Sheffield+S2+4AX" target="_blank" rel="noopener noreferrer">156 St Mary's Rd, S2 4AX</a>
+        <a href="tel:+441146985495">0114 698 5495</a>
+        <a href="#order">Order online</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Harlem House Sheffield. All rights reserved.</span>
+      <span class="halal">✦ 100% Halal</span>
+      <span>Made fresh in Sheffield</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===================== STICKY MOBILE ACTION BAR ===================== -->
+<div class="actionbar" aria-label="Quick actions">
+  <a href="tel:+441146985495" aria-label="Call Harlem House">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    Call
+  </a>
+  <a href="https://maps.google.com/?q=158+Infirmary+Rd+Sheffield+S6+3DH" target="_blank" rel="noopener noreferrer" aria-label="Get directions">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    Directions
+  </a>
+  <a href="#order" class="order" id="abOrder" aria-label="Order now">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    Order
+  </a>
+</div>
+
+<!-- ===================== DISH DETAIL MODAL ===================== -->
+<div class="modal" id="dishModal" role="dialog" aria-modal="true" aria-labelledby="dmName" aria-hidden="true">
+  <div class="modal-scrim" data-close></div>
+  <div class="modal-card">
+    <button class="modal-x" type="button" data-close aria-label="Close details">&times;</button>
+    <div class="modal-media"><img id="dmImg" alt="" width="640" height="640"></div>
+    <div class="modal-body">
+      <div class="modal-tags" id="dmTags"></div>
+      <h3 id="dmName" class="display"></h3>
+      <div class="modal-price" id="dmPrice"></div>
+      <p id="dmDesc"></p>
+      <h4>What's in it</h4>
+      <ul class="ing-list" id="dmIng"></ul>
+      <button type="button" class="btn btn-primary" id="dmAdd">Add to order</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CATEGORY / VARIANTS MODAL ===================== -->
+<div class="modal cat-card" id="catModal" role="dialog" aria-modal="true" aria-labelledby="cmTitle" aria-hidden="true">
+  <div class="modal-scrim" data-close></div>
+  <div class="modal-card">
+    <button class="modal-x" type="button" data-close aria-label="Close">&times;</button>
+    <div class="cat-head">
+      <h3 id="cmTitle"></h3>
+      <p class="cat-note" id="cmNote"></p>
+    </div>
+    <div class="cat-grid" id="cmGrid"></div>
+  </div>
+</div>
+
+<!-- ===================== GALLERY HOVER PREVIEW ===================== -->
+<div class="hovercard" id="hovercard" aria-hidden="true"></div>
+
+<!-- ===================== SUPPORT HUB ===================== -->
+<button class="help-fab" id="helpFab" aria-label="Help and support" aria-expanded="false" aria-controls="helpPanel">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4"/><circle cx="12" cy="17.6" r=".6" fill="currentColor" stroke="none"/></svg>
+</button>
+<div class="help" id="helpPanel" role="dialog" aria-modal="true" aria-labelledby="helpTitle" aria-hidden="true">
+  <div class="help-scrim" data-hclose></div>
+  <div class="help-card">
+    <div class="help-head">
+      <h2 id="helpTitle">How can we help?</h2>
+      <button class="modal-x" type="button" data-hclose aria-label="Close support">&times;</button>
+    </div>
+    <div class="help-body">
+      <p class="help-status pill status" id="helpStatus"><span class="dot"></span> <b>Checking hours…</b></p>
+      <div class="help-grid">
+        <a href="tel:+441146985495"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><b>Call Infirmary Rd</b><small>0114 698 5495</small></a>
+        <a href="tel:+441146986432"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><b>Call St Mary's Rd</b><small>0114 698 6432</small></a>
+        <a href="https://maps.google.com/?q=158+Infirmary+Rd+Sheffield+S6+3DH" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><b>Directions</b><small>Infirmary Rd · S6 3DH</small></a>
+        <a href="https://maps.google.com/?q=156+St+Marys+Rd+Sheffield+S2+4AX" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><b>Directions</b><small>St Mary's Rd · S2 4AX</small></a>
+        <a href="https://instagram.com/harlemhous3" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg><b>DM on Instagram</b><small>@harlemhous3</small></a>
+        <a href="https://tiktok.com/@harlemhouse1" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.6 6.3a4.8 4.8 0 0 1-3.3-1.3 4.8 4.8 0 0 1-1.4-2.7h-3.3v13.1a2.6 2.6 0 1 1-2.6-2.6c.2 0 .5 0 .7.1V9.5a6 6 0 0 0-.7 0 5.9 5.9 0 1 0 5.9 5.9V8.8a8 8 0 0 0 4.7 1.5V6.3z"/></svg><b>Watch on TikTok</b><small>@harlemhouse1</small></a>
+      </div>
+      <h3>Quick answers</h3>
+      <details class="faq">
+        <summary>Is everything really halal? <span class="pm" aria-hidden="true">+</span></summary>
+        <div class="fa"><b>Yes — 100% halal.</b> Every meat we serve, from the Angus smash patties to the crispy chicken, is fully halal. It's the foundation of the house.</div>
+      </details>
+      <details class="faq">
+        <summary>Do you deliver? Is there a minimum? <span class="pm" aria-hidden="true">+</span></summary>
+        <div class="fa">We deliver across Sheffield "S" postcodes — there's a <b>£20 minimum for delivery</b>. Nearby zones (S1, S2, S3, S6) usually take <b>20–30 min</b>, the wider area 30–45 min. You can also order via Just Eat or Uber Eats, or collect in store with no minimum.</div>
+      </details>
+      <details class="faq">
+        <summary>I have an allergy — can you help? <span class="pm" aria-hidden="true">+</span></summary>
+        <div class="fa"><b>Allergen info is available on request.</b> Give your branch a quick call before ordering and the team will walk you through what's safe — everything is made fresh, so we can often adapt a dish.</div>
+      </details>
+      <details class="faq">
+        <summary>How late are you open? <span class="pm" aria-hidden="true">+</span></summary>
+        <div class="fa">Open <b>till midnight</b> Sunday–Thursday, and till <b>12:30am</b> on Friday &amp; Saturday (Friday we open at 3pm, every other day at noon). Both branches keep the same hours.</div>
+      </details>
+      <details class="faq">
+        <summary>Where do I collect my order? <span class="pm" aria-hidden="true">+</span></summary>
+        <div class="fa">Whichever branch suits you: <b>158 Infirmary Rd (S6 3DH)</b> or <b>156 St Mary's Rd (S2 4AX)</b> — the one on St Mary's has a sisters' seating area. Collection orders are usually ready in 15–20 minutes.</div>
+      </details>
+      <details class="faq">
+        <summary>Can you handle big or office orders? <span class="pm" aria-hidden="true">+</span></summary>
+        <div class="fa">Absolutely — we regularly feed whole offices, <b>boxed and labelled</b>. Call ahead with your order and pickup/delivery time and we'll have everything hot and ready together.</div>
+      </details>
+      <p class="help-foot">Something about an order you've placed? <b>Call your branch</b> — it's the fastest way to reach the kitchen while your food's being made.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CART FAB + DRAWER ===================== -->
+<button class="cart-fab" id="cartFab" aria-label="View your order">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+  Order <span class="cart-count" id="cartCount">0</span>
+</button>
+<div class="drawer" id="cartDrawer" aria-hidden="true">
+  <div class="drawer-scrim" data-cclose></div>
+  <aside class="drawer-panel" role="dialog" aria-modal="true" aria-label="Your order">
+    <div class="drawer-head">
+      <h2>Your order <small id="drawerCount"></small></h2>
+      <button class="modal-x" style="position:static" type="button" data-cclose aria-label="Close order">&times;</button>
+    </div>
+    <div class="drawer-body" id="cartBody"></div>
+    <div class="drawer-foot" id="cartFoot"></div>
+  </aside>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ===================== FULL-SCREEN CHECKOUT ===================== -->
+<div class="checkout" id="checkout" role="dialog" aria-modal="true" aria-labelledby="coTitle" aria-hidden="true">
+  <header class="co-top">
+    <img src="assets/img/real/logo.webp" class="brand-logo" alt="" width="360" height="312">
+    <h2 id="coTitle">Checkout</h2>
+    <div class="co-steps" aria-hidden="true">
+      <span class="co-step done" id="st1"><i>✓</i> Cart</span><span class="sep"></span>
+      <span class="co-step on" id="st2"><i>2</i> Details</span><span class="sep"></span>
+      <span class="co-step" id="st3"><i>3</i> Done</span>
+    </div>
+    <button class="modal-x" type="button" id="coClose" aria-label="Close checkout and return to the site">&times;</button>
+  </header>
+  <div class="co-wrap" id="coWrap">
+    <section class="co-panel" aria-label="Order summary">
+      <h3><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Your order</h3>
+      <div id="coLines"></div>
+      <div class="co-totals">
+        <div class="subtotal"><span>Total</span><span class="s" id="coTotal">£0.00</span></div>
+      </div>
+      <div class="co-trust">
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg> 100% Halal</span>
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg> Made fresh to order</span>
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg> No payment taken online</span>
+      </div>
+    </section>
+    <section class="co-panel" aria-label="Your details">
+      <h3><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Details</h3>
+      <div class="seg" id="coMode" data-on="0" role="radiogroup" aria-label="Order type">
+        <span class="seg-pill" aria-hidden="true"></span>
+        <button type="button" class="on" data-m="Collection" role="radio" aria-checked="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 8h14l-1.5 12.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 8z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg>
+          Collection</button>
+        <button type="button" data-m="Delivery" role="radio" aria-checked="false">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="17" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M6 17h6V7h4l3 5v5h-1"/><path d="M12 9h3"/></svg>
+          Delivery</button>
+      </div>
+      <div class="branch" id="coBranch" role="radiogroup" aria-label="Collection branch">
+        <label><input type="radio" name="branch" value="Infirmary Road" checked><b>Infirmary Road</b><small>158 Infirmary Rd · S6 3DH</small></label>
+        <label><input type="radio" name="branch" value="St Mary's Road"><b>St Mary's Road</b><small>156 St Mary's Rd · S2 4AX</small></label>
+      </div>
+      <div class="co-banner" id="coBanner" hidden></div>
+      <div class="co-fields" id="coFields"></div>
+      <div class="co-eta" id="coEta" hidden></div>
+      <label class="co-check" id="coCallbackWrap"><input type="checkbox" id="coCallback"> Request a call back to confirm my order</label>
+      <div class="hp" aria-hidden="true"><label>Leave this field empty<input type="text" id="hpField" tabindex="-1" autocomplete="off"></label></div>
+      <button type="button" class="btn btn-primary co-place" id="coPlace">Place order</button>
+      <p class="co-note">Demo checkout — no payment taken. Production connects to your EPOS, Just Eat &amp; Uber Eats.</p>
+    </section>
+  </div>
+  <div class="co-done" id="coDone" hidden></div>
+</div>
+
+<!-- ===================== STRUCTURED DATA (local SEO) ===================== -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"WebSite",
+      "@id":"https://www.harlemhouse.co.uk/#website",
+      "url":"https://www.harlemhouse.co.uk/",
+      "name":"Harlem House"
+    },
+    {
+      "@type":"Restaurant",
+      "@id":"https://www.harlemhouse.co.uk/#infirmary-road",
+      "name":"Harlem House — Infirmary Road",
+      "image":"assets/img/real/smash-c.webp",
+      "logo":"assets/img/real/logo.webp",
+      "servesCuisine":["American","Halal","Smash Burgers","Cheesesteaks"],
+      "priceRange":"££",
+      "telephone":"+441146985495",
+      "url":"https://www.harlemhouse.co.uk/",
+      "menu":"https://www.harlemhouse.co.uk/#menu",
+      "acceptsReservations":"False",
+      "sameAs":["https://instagram.com/harlemhous3","https://tiktok.com/@harlemhouse1"],
+      "address":{"@type":"PostalAddress","streetAddress":"158 Infirmary Road","addressLocality":"Sheffield","postalCode":"S6 3DH","addressCountry":"GB"},
+      "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"450"},
+      "openingHoursSpecification":[
+        {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Sunday"],"opens":"12:00","closes":"00:00"},
+        {"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"15:00","closes":"00:30"},
+        {"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"12:00","closes":"00:30"}
+      ]
+    },
+    {
+      "@type":"Restaurant",
+      "@id":"https://www.harlemhouse.co.uk/#st-marys-road",
+      "name":"Harlem House — St Mary's Road",
+      "image":"assets/img/real/cheesesteak.webp",
+      "logo":"assets/img/real/logo.webp",
+      "servesCuisine":["American","Halal","Smash Burgers","Cheesesteaks"],
+      "priceRange":"££",
+      "telephone":"+441146986432",
+      "url":"https://www.harlemhouse.co.uk/",
+      "menu":"https://www.harlemhouse.co.uk/#menu",
+      "sameAs":["https://instagram.com/harlemhous3","https://tiktok.com/@harlemhouse1"],
+      "address":{"@type":"PostalAddress","streetAddress":"156 St Mary's Road","addressLocality":"Sheffield","postalCode":"S2 4AX","addressCountry":"GB"},
+      "openingHoursSpecification":[
+        {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Sunday"],"opens":"12:00","closes":"00:00"},
+        {"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"15:00","closes":"00:30"},
+        {"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"12:00","closes":"00:30"}
+      ]
+    },
+    {
+      "@type":"FAQPage",
+      "@id":"https://www.harlemhouse.co.uk/#faq",
+      "mainEntity":[
+        {"@type":"Question","name":"Is everything at Harlem House halal?","acceptedAnswer":{"@type":"Answer","text":"Yes — 100% halal. Every meat served, from Angus smash patties to crispy chicken, is fully halal."}},
+        {"@type":"Question","name":"Does Harlem House deliver and is there a minimum order?","acceptedAnswer":{"@type":"Answer","text":"Delivery is available across Sheffield S postcodes with a £20 minimum order. Nearby zones (S1, S2, S3, S6) typically take 20–30 minutes. Collection has no minimum."}},
+        {"@type":"Question","name":"How late is Harlem House open?","acceptedAnswer":{"@type":"Answer","text":"Open till midnight Sunday–Thursday and till 12:30am Friday and Saturday. Friday opening is 3pm; all other days open at noon."}},
+        {"@type":"Question","name":"Where can I collect my order?","acceptedAnswer":{"@type":"Answer","text":"From either branch: 158 Infirmary Road (S6 3DH) or 156 St Mary's Road (S2 4AX), which also has a sisters' seating area. Collection orders are usually ready in 15–20 minutes."}}
+      ]
+    }
+  ]
+}
+</script>
+
+<!-- ===================== APP SCRIPT (single scope — no shared globals) ===================== -->
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- helpers ---------------- */
+  var RM = matchMedia('(prefers-reduced-motion: reduce)');
+  var FINE = matchMedia('(hover:hover) and (pointer:fine)').matches;
+  function $(s,c){return (c||document).querySelector(s);}
+  function $$(s,c){return [].slice.call((c||document).querySelectorAll(s));}
+  /* escape & < > " ' — used on EVERY dynamic value that reaches innerHTML */
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function price(p){return parseFloat(String(p).replace(/[^0-9.]/g,''))||0;}
+  function gbp(n){return '£'+(Math.round(n*100)/100).toFixed(2);}
+  function deepFreeze(o){Object.getOwnPropertyNames(o).forEach(function(k){var v=o[k];if(v&&typeof v==='object')deepFreeze(v);});return Object.freeze(o);}
+
+  /* ---------------- logo: key out the near-black background ---------------- */
+  (function(){
+    var img=new Image();
+    img.onload=function(){
+      try{
+        var c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;
+        var x=c.getContext('2d');x.drawImage(img,0,0);
+        var d=x.getImageData(0,0,c.width,c.height),p=d.data;
+        for(var i=0;i<p.length;i+=4){
+          var m=Math.max(p[i],p[i+1],p[i+2]);
+          p[i+3]=m<16?0:(m<56?Math.round((m-16)/40*255):p[i+3]);
+        }
+        x.putImageData(d,0,0);
+        var url=c.toDataURL('image/png');
+        $$('img.brand-logo').forEach(function(el){el.src=url;el.style.mixBlendMode='normal';});
+      }catch(e){/* keep blend-mode fallback */}
+    };
+    img.src='assets/img/real/logo.webp';
+  })();
+
+  /* ---------------- loader (hard cap so it never sticks) ---------------- */
+  var loaderEl=$('#loader');
+  function hideLoader(){ if(loaderEl) loaderEl.classList.add('gone'); }
+  window.addEventListener('load',function(){ setTimeout(hideLoader,RM.matches?0:450); });
+  setTimeout(hideLoader,2400);
+
+  /* ---------------- scroll: progress bar + nav state (one rAF) ---------------- */
+  var nav=$('#nav'), pBar=$('#progressBar'), ticking=false;
+  function onScrollFrame(){
+    ticking=false;
+    var y=window.scrollY;
+    nav.classList.toggle('scrolled',y>40);
+    var h=document.documentElement.scrollHeight-innerHeight;
+    if(pBar) pBar.style.transform='scaleX('+(h>0?Math.min(1,y/h):0)+')';
+  }
+  addEventListener('scroll',function(){ if(!ticking){ticking=true;requestAnimationFrame(onScrollFrame);} },{passive:true});
+  onScrollFrame();
+
+  /* ---------------- mobile nav ---------------- */
+  var burger=$('#burger'), navlinks=$('#navlinks'), navScrim=$('#navScrim');
+  function setNav(open){
+    navlinks.classList.toggle('open',open);
+    burger.classList.toggle('open',open);
+    navScrim.classList.toggle('show',open);
+    burger.setAttribute('aria-expanded',open?'true':'false');
+    burger.setAttribute('aria-label',open?'Close menu':'Open menu');
+    document.body.classList.toggle('modal-open',open);
+  }
+  burger.addEventListener('click',function(){ setNav(!navlinks.classList.contains('open')); });
+  navScrim.addEventListener('click',function(){ setNav(false); });
+  $$('a',navlinks).forEach(function(a){a.addEventListener('click',function(){ setNav(false); });});
+
+  /* ---------------- scroll spy ---------------- */
+  (function(){
+    var links=$$('.nav-links a[data-spy]');
+    if(!links.length||!('IntersectionObserver' in window))return;
+    var map={};
+    links.forEach(function(a){var id=a.getAttribute('href').slice(1);map[id]=a;});
+    var spy=new IntersectionObserver(function(en){
+      en.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(a){a.classList.remove('active');});
+          var a=map[e.target.id]; if(a)a.classList.add('active');
+        }
+      });
+    },{rootMargin:'-40% 0px -55% 0px'});
+    Object.keys(map).forEach(function(id){var s=document.getElementById(id);if(s)spy.observe(s);});
+  })();
+
+  /* ---------------- toast (optional action button) ---------------- */
+  var toastEl=$('#toast'), toastT=null;
+  function toast(msg,action){
+    if(!toastEl)return;
+    toastEl.textContent='';
+    toastEl.appendChild(document.createTextNode(msg));
+    if(action){
+      var b=document.createElement('button');b.type='button';b.textContent=action.label;
+      b.addEventListener('click',function(){toastEl.classList.remove('show');action.fn();});
+      toastEl.appendChild(b);
+    }
+    toastEl.classList.add('show');
+    clearTimeout(toastT); toastT=setTimeout(function(){toastEl.classList.remove('show');},action?4200:2100);
+  }
+
+  /* ---------------- overlay manager: scroll lock, esc, focus trap, focus restore ---------------- */
+  var overlayStack=[];
+  function focusables(el){return $$('button:not([disabled]),a[href],input:not([disabled]),select,textarea,summary,[tabindex]:not([tabindex="-1"])',el).filter(function(n){return n.offsetParent!==null;});}
+  function openOverlay(el,focusSel){
+    el.classList.add('open'); el.setAttribute('aria-hidden','false');
+    document.body.classList.add('modal-open');
+    overlayStack.push({el:el,last:document.activeElement});
+    /* focus on the next frame — the overlay is still computed hidden in this one */
+    requestAnimationFrame(function(){
+      if(!el.classList.contains('open'))return;
+      var t=focusSel?$(focusSel,el):null;
+      (t||focusables(el)[0]||el).focus({preventScroll:true});
+    });
+  }
+  function closeOverlay(el){
+    var i=overlayStack.map(function(o){return o.el;}).lastIndexOf(el);
+    if(i<0)return;
+    var rec=overlayStack.splice(i,1)[0];
+    el.classList.remove('open'); el.setAttribute('aria-hidden','true');
+    if(el.id==='helpPanel')$('#helpFab').setAttribute('aria-expanded','false');
+    if(!overlayStack.length && !navlinks.classList.contains('open')) document.body.classList.remove('modal-open');
+    if(rec.last&&rec.last.focus)rec.last.focus({preventScroll:true});
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){
+      if(navlinks.classList.contains('open')){setNav(false);return;}
+      var top=overlayStack[overlayStack.length-1];
+      if(top)closeOverlay(top.el);
+      return;
+    }
+    if(e.key==='Tab'&&overlayStack.length){
+      var el=overlayStack[overlayStack.length-1].el;
+      var f=focusables(el); if(!f.length)return;
+      var first=f[0],last=f[f.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+      else if(!el.contains(document.activeElement)){e.preventDefault();first.focus();}
+    }
+  });
+
+  /* ---------------- menu data: real Harlem House lineup (frozen — single source of truth) ---------------- */
+  var CATS=deepFreeze({
+    steaks:{t:'Sheffield Cheesesteaks',note:'Loaded steak subs in soft brioche-style bread — sauced, stacked, made to order.',cover:'real/cheesesteak'},
+    smash:{t:'Harlem Smashes',note:'All smash burgers are served in brioche buns, topped with house sauce, ketchup and fresh lettuce.',cover:'real/smash-c'},
+    chicken:{t:'Chicken',note:'Crispy, juicy and 100% halal — from fiery burgers to chicken & waffles.',cover:'real/burger-chicken'},
+    fries:{t:'Loaded Fries',note:'Thick-cut fries buried under steak, chicken and melted cheese — available as full or half trays.',cover:'real/fries-steak-mac'},
+    sides:{t:'Sides & Desserts',note:'Proper sides and desserts crafted fresh in-house.',cover:'real/cake'},
+    shakes:{t:'Shakes & Drinks',note:'Thick shakes served in the signature Harlem House cup.',cover:'real/biscoff'}
+  });
+  var MENU=deepFreeze({
+    steaks:[
+      {n:'Philly Cheesesteak',p:'£9.99',t:'signature',img:'real/cheesesteak',d:'Thin-sliced steak, melted cheese, sautéed onions & peppers in soft brioche-style bread.',ing:['Thin-sliced steak','Melted cheese','Sautéed onions','Peppers','Signature house sauce','Brioche-style roll']},
+      {n:'Smoked Out Philly',p:'£10.99',t:'spice',img:'real/cheesesteak',d:'Our Philly with a deep smoky twist and extra cheese. Bold and rich.',ing:['Thin-sliced steak','Smoked cheese','Extra cheese','Smoky house sauce','Caramelised onions','Brioche-style roll']},
+      {n:'Chopped Cheese',p:'£9.49',t:'',img:'real/burger-meaty',d:'NYC-style chopped beef, melted cheese, onions & house sauce. A proper classic.',ing:['Chopped beef','Melted American cheese','Grilled onions','House sauce','Toasted roll']}
+    ],
+    smash:[
+      {n:'El Classico',p:'£7.99',t:'',img:'real/smash-b',d:'A premium Angus beef patty, expertly seasoned and smashed on the grill for crispy edges and rich, irresistible flavour — topped with melted American cheese.',ing:['Angus beef patty','American cheese','House sauce','Ketchup','Fresh lettuce','Brioche bun']},
+      {n:'El Classico 2.0',p:'£9.49',t:'',img:'real/smash-c',d:'Two premium Angus beef patties, smashed on the grill for crispy edges and rich flavour, topped with melted American cheese.',ing:['Two Angus beef patties','American cheese','House sauce','Ketchup','Fresh lettuce','Brioche bun']},
+      {n:'Uptown Smash',p:'£10.49',t:'signature',img:'real/smash-d',d:'Two Angus smashed patties topped with melted American cheese and a layer of our signature Sheffield Cheesesteak Original.',ing:['Two Angus beef patties','American cheese','Sheffield cheesesteak layer','House sauce','Fresh lettuce','Brioche bun']},
+      {n:'Mac N\' Smash',p:'£10.99',t:'signature',img:'real/smash-a',d:'Two Angus smashed patties topped with melted American cheese and a generous layer of creamy mac and cheese.',ing:['Two Angus beef patties','American cheese','Creamy mac & cheese','House sauce','Brioche bun']}
+    ],
+    chicken:[
+      {n:'Harlem Heat',p:'£9.49',t:'spice',img:'real/burger-chicken',d:'Crispy chicken burger with our fiery hot sauce. Brings the heat.',ing:['Crispy chicken fillet','Fiery hot sauce','Lettuce','Pickles','Brioche bun']},
+      {n:'Sweet Harlem',p:'£9.49',t:'',img:'real/burger-chicken',d:'Crispy chicken glazed sweet — the perfect sweet-savoury hit.',ing:['Crispy chicken fillet','Sweet glaze','Lettuce','Brioche bun']},
+      {n:'Double Barrel Chick',p:'£10.99',t:'',img:'real/burger-chicken',d:'Double crispy chicken fillets, double the cheese, double trouble.',ing:['Two crispy chicken fillets','Double cheese','House sauce','Brioche bun']},
+      {n:'Chicken & Waffle',p:'£9.99',t:'signature',img:'real/chicken-waffles',d:'Crispy chicken on a fluffy waffle with syrup. Brunch, any time.',ing:['Crispy chicken','Fluffy waffle','Maple syrup','Butter']},
+      {n:'Chicken Tenders 3x',p:'£5.49',t:'',img:'fried-chicken',d:'Three golden, crunchy hand-battered tenders.',ing:['Three hand-battered tenders','House seasoning','Dip of choice']},
+      {n:'Kids Box',p:'£6.99',t:'',img:'real/edited4',d:'Crispy tenders with fries, a Fruit Shoot and a Kinder Surprise — sized for little legends.',ing:['Chicken tenders','Fries','Fruit Shoot','Kinder Surprise']}
+    ],
+    fries:[
+      {n:'Loaded Fries — Cheesesteak Original',p:'£8.99',t:'signature',img:'real/lf-04',d:'Thick-cut fries buried under our signature Sheffield cheesesteak — steak, melted cheese & house sauce.',ing:['Thick-cut fries','Sheffield cheesesteak','Melted cheese','House sauce']},
+      {n:'Loaded Fries — Cheesesteak Smoked',p:'£9.49',t:'spice',img:'real/lf-03',d:'The smoked-out version — deep, rich smoky steak over fries with extra cheese.',ing:['Thick-cut fries','Smoked cheesesteak','Extra cheese','Smoky sauce']},
+      {n:'Loaded Fries — Chopped Cheese',p:'£8.49',t:'',img:'real/lf-02',d:'Fries loaded with NYC-style chopped beef, melted cheese & grilled onions.',ing:['Thick-cut fries','Chopped beef','Melted cheese','Grilled onions']},
+      {n:'Loaded Fries — Chopped Chick Heat',p:'£8.49',t:'spice',img:'real/lf-01',d:'Crispy chopped chicken tossed in our fiery heat sauce, piled high on fries.',ing:['Thick-cut fries','Chopped chicken','Heat sauce','Melted cheese']},
+      {n:'Loaded Fries — Chopped Chick Sweet',p:'£8.49',t:'',img:'real/lf-10',d:'Chopped chicken in the sweet glaze over fries and creamy mac.',ing:['Thick-cut fries','Chopped chicken','Sweet glaze','Melted cheese']},
+      {n:'Chopped N\' Mixed',p:'£9.49',t:'signature',img:'real/lf-08',d:'Half chopped cheese, half chopped chick — the best of both worlds in one tray.',ing:['Thick-cut fries','Chopped beef','Chopped chicken','Melted cheese','House sauce']}
+    ],
+    sides:[
+      {n:'Mac N\' Cheese',p:'£4.49',t:'',img:'real/mac-cheese',d:'Creamy, rich and full of flavour. Not your bland mac.',ing:['Macaroni','Three-cheese sauce','Golden crumb']},
+      {n:'Mozzy Sticks 3x',p:'£4.49',t:'',img:'fried-chicken',d:'Three gooey mozzarella sticks with a crisp coating.',ing:['Three mozzarella sticks','Crisp coating','Dip']},
+      {n:'Fries (Reg / Lrg)',p:'£2.99',t:'',img:'fries',d:'Thick-cut, nicely seasoned house fries.',ing:['Thick-cut potatoes','House seasoning']},
+      {n:'Mississippi Mudpie',p:'£4.49',t:'signature',img:'real/cake',d:'Crafted fresh in-house — a crisp chocolate crumb base with dense fudge brownie and smooth chocolate mousse. Intensely rich with perfectly balanced sweetness.',ing:['Chocolate crumb base','Fudge brownie','Chocolate mousse']},
+      {n:'New York Cheesecake',p:'£4.49',t:'',img:'real/cake',d:'Classic baked cheesecake — dense, creamy and made fresh in-house.',ing:['Cream cheese','Biscuit base','Vanilla']},
+      {n:'Biscoff Tiramisu',p:'£4.99',t:'',img:'real/biscoff-icecream',d:'Lotus Biscoff layered tiramisu-style. Dangerous.',ing:['Biscoff','Mascarpone cream','Biscoff crumb']},
+      {n:'Raspberry Tiramisu',p:'£4.99',t:'',img:'real/cake',d:'Sharp raspberry through soft mascarpone layers.',ing:['Raspberry','Mascarpone cream','Sponge']},
+      {n:'Waffle & Ice Cream',p:'£5.49',t:'',img:'real/waffle-icecream',d:'Warm waffle, cold ice cream, strawberries on top.',ing:['Fresh waffle','Ice cream','Strawberries','Syrup']}
+    ],
+    shakes:[
+      {n:'Harlem Shake 568ml',p:'£4.99',t:'signature',img:'real/biscoff',d:'Thick, creamy and dreamy — served in the signature Harlem House cup.',ing:['Thick shake','Whipped cream','Signature cup']},
+      {n:'Biscoff Shake',p:'£5.49',t:'',img:'real/biscoff',d:'Lotus Biscoff blended thick, topped with Biscoff crumb and caramel drizzle.',ing:['Biscoff','Thick shake','Biscoff crumb','Caramel']},
+      {n:'Harlem Keys Shake 568ml',p:'£5.49',t:'',img:'milkshake',d:'Our loaded speciality shake. Pure dessert energy.',ing:['Loaded speciality shake','Cookies','Chocolate sauce','Whipped cream']},
+      {n:'Soft Drinks 330ml',p:'£1.49',t:'',img:'real/coke',d:'Coca-Cola, Fanta, Sprite, Dr Pepper, Mountain Dew & more.',ing:['Chilled can','Choice of flavour']},
+      {n:'Koolaid 330ml',p:'£1.79',t:'',img:'milkshake',d:'That nostalgic, fruity hit.',ing:['Fruity refresher','Served chilled']}
+    ]
+  });
+  var TABS=[['steaks','Cheesesteaks'],['smash','Harlem Smashes'],['chicken','Chicken'],['fries','Loaded Fries'],['sides','Sides & Desserts'],['shakes','Shakes & Drinks']];
+  function imgsrc(k){return 'assets/img/'+k+'.webp';}
+  function getItem(cat,i){return (MENU[cat]||[])[i]||null;}
+  var ICON_STAR='<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>';
+  var ICON_FLAME='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2c1.5 3-1 4 0 7 .8 2.4 3 3 3 6a4 4 0 0 1-8 0c0-2 1-3 1-5"/></svg>';
+  function tagHTML(t){return t==='signature'?'<span class="tag">'+ICON_STAR+' Signature</span>':t==='spice'?'<span class="tag spice">'+ICON_FLAME+' Spicy</span>':'';}
+
+  /* ---------------- menu render: tabs + grid ---------------- */
+  var tabsEl=$('#menuTabs'), grid=$('#menuGrid'), currentCat='steaks';
+  tabsEl.innerHTML=TABS.map(function(t,idx){
+    return '<button class="menu-tab" role="tab" id="tab-'+t[0]+'" aria-selected="'+(idx===0?'true':'false')+'" tabindex="'+(idx===0?'0':'-1')+'" data-cat="'+t[0]+'">'+esc(t[1])+'<span class="ct">'+MENU[t[0]].length+'</span></button>';
+  }).join('');
+  /* per-card add / quantity-stepper control (reflects live cart qty) */
+  function qtyOf(id){for(var k=0;k<cart.length;k++){if(cart[k].id===id)return cart[k].q;}return 0;}
+  function dishCtrlHTML(cat,i){
+    var d=getItem(cat,i); if(!d)return '';
+    var id=cat+':'+i, q=qtyOf(id), nm=esc(d.n);
+    if(q>0){
+      return '<div class="dish-stepper" role="group" aria-label="Quantity of '+nm+'">'+
+        '<button type="button" class="ds-btn" data-sub data-cat="'+cat+'" data-i="'+i+'" aria-label="Remove one '+nm+'">&minus;</button>'+
+        '<span class="ds-q" aria-live="polite">'+q+'</span>'+
+        '<button type="button" class="ds-btn" data-add data-cat="'+cat+'" data-i="'+i+'" aria-label="Add one '+nm+'">+</button>'+
+      '</div>';
+    }
+    return '<button type="button" class="dish-add" data-add data-cat="'+cat+'" data-i="'+i+'" aria-label="Add '+nm+' to order">+ Add</button>';
+  }
+  function updateDishControls(){
+    $$('#menuGrid .dish').forEach(function(art,i){
+      var foot=art.querySelector('.dish-foot'); if(!foot)return;
+      var ctrl=foot.querySelector('.dish-add,.dish-stepper'); if(!ctrl)return;
+      var tmp=document.createElement('div'); tmp.innerHTML=dishCtrlHTML(currentCat,i);
+      var fresh=tmp.firstChild; if(fresh)ctrl.replaceWith(fresh);
+    });
+  }
+  function renderMenu(cat){
+    currentCat=cat;
+    grid.setAttribute('aria-labelledby','tab-'+cat);
+    grid.innerHTML=MENU[cat].map(function(d,i){
+      return '<article class="dish" style="--d:'+Math.min(i*45,360)+'ms">'+
+        '<div class="dish-media">'+tagHTML(d.t)+'<img src="'+imgsrc(d.img)+'" alt="" loading="lazy" decoding="async" width="320" height="240"></div>'+
+        '<div class="dish-body">'+
+          '<div class="dish-top"><h3 class="dish-name">'+esc(d.n)+'</h3><div class="dish-price">'+esc(d.p)+'</div></div>'+
+          '<p class="dish-desc">'+esc(d.d)+'</p>'+
+          '<div class="dish-foot">'+
+            '<button type="button" class="dish-details" data-cat="'+cat+'" data-i="'+i+'">Details</button>'+
+            dishCtrlHTML(cat,i)+
+          '</div>'+
+        '</div>'+
+      '</article>';
+    }).join('');
+    bindTilts();
+  }
+  tabsEl.addEventListener('click',function(e){
+    var b=e.target.closest('.menu-tab'); if(!b)return;
+    $$('.menu-tab',tabsEl).forEach(function(t){t.setAttribute('aria-selected','false');t.tabIndex=-1;});
+    b.setAttribute('aria-selected','true');b.tabIndex=0;
+    renderMenu(b.dataset.cat);
+  });
+  tabsEl.addEventListener('keydown',function(e){
+    var keys=['ArrowLeft','ArrowRight','Home','End']; if(keys.indexOf(e.key)<0)return;
+    e.preventDefault();
+    var tabs=$$('.menu-tab',tabsEl), i=tabs.indexOf(document.activeElement);
+    if(i<0)i=0;
+    if(e.key==='ArrowLeft')i=(i-1+tabs.length)%tabs.length;
+    else if(e.key==='ArrowRight')i=(i+1)%tabs.length;
+    else if(e.key==='Home')i=0; else i=tabs.length-1;
+    tabs[i].focus(); tabs[i].click();
+  });
+
+  /* ---------------- dish detail modal ---------------- */
+  var dishModal=$('#dishModal');
+  function openDetail(cat,i){
+    var d=getItem(cat,i); if(!d)return;
+    var img=$('#dmImg'); img.src=imgsrc(d.img); img.alt=d.n;
+    $('#dmTags').innerHTML=tagHTML(d.t);
+    $('#dmName').textContent=d.n;
+    $('#dmPrice').textContent=d.p;
+    $('#dmDesc').textContent=d.d;
+    $('#dmIng').innerHTML=(d.ing||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('');
+    var addBtn=$('#dmAdd');
+    addBtn.textContent='Add to order · '+d.p;
+    addBtn.dataset.cat=cat; addBtn.dataset.i=i;
+    openOverlay(dishModal,'.modal-x');
+  }
+  dishModal.addEventListener('click',function(e){ if(e.target.closest('[data-close]')) closeOverlay(dishModal); });
+  grid.addEventListener('click',function(e){
+    var sub=e.target.closest('[data-sub]');
+    if(sub){setQty(sub.dataset.cat+':'+(+sub.dataset.i),-1);return;}
+    var add=e.target.closest('[data-add]');
+    if(add){addToCart(add.dataset.cat,+add.dataset.i);return;}
+    var det=e.target.closest('.dish-details');
+    if(det)openDetail(det.dataset.cat,+det.dataset.i);
+  });
+  $('#dmAdd').addEventListener('click',function(){
+    addToCart(this.dataset.cat,+this.dataset.i);
+    closeOverlay(dishModal);
+    openDrawer();
+  });
+
+  /* ---------------- category (variants) modal ---------------- */
+  var catModal=$('#catModal');
+  function openCategory(cat){
+    var c=CATS[cat], items=MENU[cat]; if(!c||!items)return;
+    $('#cmTitle').textContent=c.t;
+    $('#cmNote').textContent=c.note;
+    $('#cmGrid').innerHTML=items.map(function(d,i){
+      return '<div class="vcard">'+
+        '<img src="'+imgsrc(d.img)+'" alt="'+esc(d.n)+'" width="640" height="400" loading="lazy" decoding="async">'+
+        '<div class="v-body">'+
+          '<div class="v-top"><h5>'+esc(d.n)+'</h5><span class="v-price">'+esc(d.p)+'</span></div>'+
+          '<p>'+esc(d.d)+'</p>'+
+          '<div class="v-actions">'+
+            '<button type="button" class="btn btn-ghost" data-detail data-cat="'+cat+'" data-i="'+i+'">Details</button>'+
+            '<button type="button" class="btn btn-gold" data-add data-cat="'+cat+'" data-i="'+i+'">Add +</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+    openOverlay(catModal,'.modal-x');
+    bindTilts();
+  }
+  catModal.addEventListener('click',function(e){
+    if(e.target.closest('[data-close]')){closeOverlay(catModal);return;}
+    var det=e.target.closest('[data-detail]');
+    if(det){closeOverlay(catModal);openDetail(det.dataset.cat,+det.dataset.i);return;}
+    var add=e.target.closest('[data-add]');
+    if(add)addToCart(add.dataset.cat,+add.dataset.i);
+  });
+
+  /* ---------------- gallery: hover preview + click to browse ---------------- */
+  var hc=$('#hovercard');
+  function fillHover(cat){
+    var c=CATS[cat], items=MENU[cat]; if(!c||!items)return '';
+    var rows=items.slice(0,4).map(function(d){return '<div class="hc-item"><span>'+esc(d.n)+'</span><span class="p">'+esc(d.p)+'</span></div>';}).join('');
+    var more=items.length>4?'<div class="hc-item"><span>+ '+(items.length-4)+' more…</span><span></span></div>':'';
+    return '<img src="'+imgsrc(c.cover)+'" alt="">'+
+      '<div class="hc-body"><h4>'+esc(c.t)+'</h4><div class="hc-note">'+esc(c.note)+'</div>'+rows+more+
+      '<div class="hc-cta">Click to browse &amp; order →</div></div>';
+  }
+  function placeHover(tile){
+    var r=tile.getBoundingClientRect(), W=300, H=hc.offsetHeight||320, pad=12, gap=14;
+    var cx=r.left+r.width/2;                          /* tile horizontal centre */
+    var grid=tile.closest('.gal-grid'), gm=grid?grid.getBoundingClientRect():null;
+    var upper=gm?((r.top+r.height/2)<(gm.top+gm.height/2)):((r.top+r.height/2)<innerHeight/2);
+    if(upper){
+      /* upper row → float ABOVE the tile (viewport-fixed) — unchanged, works well */
+      hc.style.position='fixed';
+      var xf=Math.min(Math.max(pad,cx-W/2),innerWidth-W-pad);
+      var yf=r.top-H-gap; if(yf<pad) yf=Math.min(r.bottom+gap,innerHeight-H-pad);
+      hc.style.left=xf+'px'; hc.style.top=Math.max(pad,yf)+'px';
+    }else{
+      /* lower row → expand from the MIDDLE of its own tile (not fully below), in document flow so
+         it stays fully visible and never rises into / overlaps the row above it */
+      hc.style.position='absolute';
+      var xa=Math.min(Math.max(pad,cx-W/2),innerWidth-W-pad)+window.scrollX;
+      hc.style.left=xa+'px'; hc.style.top=(window.scrollY+r.top+r.height/2)+'px';
+    }
+  }
+  if(hc && FINE){
+    $$('.gal-item').forEach(function(tile){
+      tile.addEventListener('pointerenter',function(e){
+        if(e.pointerType!=='mouse')return;
+        hc.innerHTML=fillHover(tile.dataset.cat);
+        hc.classList.add('show'); placeHover(tile);
+        requestAnimationFrame(function(){placeHover(tile);});
+      });
+      tile.addEventListener('pointerleave',function(){hc.classList.remove('show');});
+    });
+    addEventListener('scroll',function(){hc.classList.remove('show');},{passive:true});
+  }
+  $('.gal-grid').addEventListener('click',function(e){
+    var b=e.target.closest('[data-cat]'); if(!b)return;
+    if(hc)hc.classList.remove('show');
+    openCategory(b.dataset.cat);
+  });
+
+  /* ---------------- reviews rail ---------------- */
+  var REVIEWS=[
+    {q:'"This is American food probably better than most places in America — it\'s that good. The cheesesteak was simply divine."',who:'— Google Review'},
+    {q:'"What stands this place out is the pure love put into every single dish. Hats off — a MUST visit. 10/10."',who:'— @munchingakhi, TikTok'},
+    {q:'"By far the most consistently excellent takeaway in Sheffield. Never had a bad one — and the staff are super friendly."',who:'— Google Review'},
+    {q:'"The Uptown Smash is genuinely the best burger I\'ve had in Sheffield. That cheesesteak layer on top is ridiculous."',who:'— Google Review'},
+    {q:'"Late-night saviour. Food came out hot and fresh and the Biscoff shake is unreal. The sisters\' area at St Mary\'s is a lovely touch."',who:'— Google Review'},
+    {q:'"Ordered for the whole office — everything arrived labelled, hot and on time. The Mac N\'Smash absolutely slaps."',who:'— Just Eat Review'},
+    {q:'"The Philly cheesesteak is the real deal — proper thin-sliced steak and that house sauce. Tastes like NYC, made in Sheffield."',who:'— Google Review'},
+    {q:'"Drove half an hour for the Mac N\'Smash after seeing it online. Worth every mile — the cheese pull is unreal."',who:'— @sheffeats, TikTok'},
+    {q:'"Took the kids and they demolished the Kids Box. 100% halal, made fresh, and the team couldn\'t have been kinder."',who:'— Google Review'},
+    {q:'"Loaded fries with the cheesesteak on top should be illegal. Came out piping hot and the portion was massive."',who:'— Just Eat Review'},
+    {q:'"The Mississippi Mudpie is the best dessert in the city, full stop. Came back the next day just for another slice."',who:'— Google Review'},
+    {q:'"Chicken & waffle done right — crispy, fluffy, that maple hit. Honestly my new weekend ritual."',who:'— @halalbites, Instagram'}
+  ];
+  (function(){
+    var rail=$('#revRail'); if(!rail)return;
+    function card(r,dupe){return '<div class="rev"'+(dupe?' data-dupe aria-hidden="true"':'')+'><div class="stars" aria-label="5 out of 5 stars">★★★★★</div><p>'+esc(r.q)+'</p><div class="who">'+esc(r.who)+'</div></div>';}
+    function row(set,dir){
+      var h=set.map(function(r){return card(r,false);}).join('')+set.map(function(r){return card(r,true);}).join('');
+      return '<div class="rev-row" data-dir="'+dir+'">'+h+'</div>';
+    }
+    rail.innerHTML=row(REVIEWS.slice(0,6),'l')+row(REVIEWS.slice(6),'r');
+  })();
+
+  /* ---------------- marquee: clone enough copies that one half always exceeds the
+       viewport, so the translateX(-50%) loop never reveals a blank gap (any screen width) ---------------- */
+  (function(){
+    var marq=$('.marquee'); if(!marq)return;
+    var track=$('.track',marq); if(!track)return;
+    var phrases=[].slice.call(track.children)
+      .filter(function(s){return !s.hasAttribute('data-dupe');})
+      .map(function(s){return s.textContent;});
+    if(!phrases.length)return;
+    var unit=phrases.map(function(t){return '<span>'+esc(t)+'</span>';}).join('');
+    /* measure one unit with a hidden probe — never disturbs the live track */
+    function unitWidth(){
+      var probe=document.createElement('div');
+      probe.style.cssText='position:absolute;left:0;top:0;visibility:hidden;pointer-events:none;display:flex;white-space:nowrap';
+      probe.innerHTML=unit; marq.appendChild(probe);
+      var w=probe.getBoundingClientRect().width||1; marq.removeChild(probe); return w;
+    }
+    var built=0;
+    function fill(){
+      var copies=Math.max(2, Math.ceil(window.innerWidth/unitWidth())+1); // per half — always wider than the viewport
+      if(copies===built)return;                               // skip rebuild when unchanged (track stays intact)
+      built=copies;
+      var half=''; for(var k=0;k<copies;k++){half+=unit;}
+      track.innerHTML=half+half;                              // two equal halves → seamless -50% loop
+    }
+    fill();
+    var rt; window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(fill,180);},{passive:true});
+  })();
+
+  /* ---------------- live OPEN / CLOSED / CLOSING SOON status ---------------- */
+  /* minutes from midnight; close > 1440 spills into the next day (12:30am = 1470) */
+  var HOURS={0:[720,1440],1:[720,1440],2:[720,1440],3:[720,1440],4:[720,1440],5:[900,1470],6:[720,1470]};
+  function fmt(m){m=((m%1440)+1440)%1440;var h=Math.floor(m/60),mm=m%60;var ap=h<12?'am':'pm';var hh=h%12;if(hh===0)hh=12;return hh+(mm?':'+(mm<10?'0':'')+mm:'')+ap;}
+  function computeStatus(now){
+    var d=now.getDay(),mins=now.getHours()*60+now.getMinutes();
+    var today=HOURS[d],open=today[0],close=today[1];
+    if(mins>=open && mins<Math.min(close,1440)){return {open:true,until:close,left:Math.min(close,1440)-mins+(close>1440?close-1440:0)};}
+    var yd=(d+6)%7,yClose=HOURS[yd][1];
+    if(yClose>1440 && mins<(yClose-1440)){return {open:true,until:yClose,left:(yClose-1440)-mins};}
+    var next=open, addDays=0;
+    if(mins>=open){next=HOURS[(d+1)%7][0];addDays=1;}
+    return {open:false,nextOpen:next,nextDay:(d+addDays)%7};
+  }
+  function applyStatus(){
+    var st=computeStatus(new Date());
+    var cls,heroLabel,shortLabel;
+    if(st.open&&st.left<=45){cls='is-soon';heroLabel='Closing soon · until '+fmt(st.until);shortLabel='Closing soon';}
+    else if(st.open){cls='is-open';heroLabel='Open now · until '+fmt(st.until);shortLabel='Open now';}
+    else {cls='is-closed';heroLabel='Closed · opens '+fmt(st.nextOpen);shortLabel='Closed now';}
+    $$('.status').forEach(function(el){
+      el.classList.remove('is-open','is-closed','is-soon');el.classList.add(cls);
+      var b=el.querySelector('b'); if(!b)return;
+      b.textContent=(el.id==='heroStatus'||el.id==='helpStatus')?heroLabel:shortLabel;
+    });
+    var d=new Date().getDay();
+    $$('#hoursList .h').forEach(function(h){h.classList.toggle('today',+h.dataset.day===d);});
+  }
+  applyStatus();
+  setInterval(applyStatus,60000);
+
+  /* ---------------- static SVG poster (shown before/instead of 3D) ---------------- */
+  var POSTER='<svg viewBox="0 0 420 380" role="img" aria-label="Harlem House signature smash burger">'+
+    '<defs>'+
+    '<linearGradient id="bunT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3c071"/><stop offset="1" stop-color="#d3923f"/></linearGradient>'+
+    '<linearGradient id="bunB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0a657"/><stop offset="1" stop-color="#bd7f37"/></linearGradient>'+
+    '<linearGradient id="chz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffce4d"/><stop offset="1" stop-color="#f6a82a"/></linearGradient>'+
+    '</defs>'+
+    '<ellipse cx="210" cy="332" rx="150" ry="24" fill="#000" opacity=".4"/>'+
+    '<path d="M68 150 Q70 64 210 60 Q350 64 352 150 Z" fill="url(#bunT)"/>'+
+    '<g fill="#fbe9c2">'+
+      '<ellipse cx="150" cy="118" rx="8" ry="4" transform="rotate(-18 150 118)"/>'+
+      '<ellipse cx="205" cy="104" rx="8" ry="4" transform="rotate(8 205 104)"/>'+
+      '<ellipse cx="262" cy="120" rx="8" ry="4" transform="rotate(20 262 120)"/>'+
+      '<ellipse cx="120" cy="140" rx="8" ry="4"/><ellipse cx="295" cy="140" rx="8" ry="4"/>'+
+      '<ellipse cx="180" cy="135" rx="7" ry="3.6"/><ellipse cx="235" cy="135" rx="7" ry="3.6"/>'+
+    '</g>'+
+    '<path d="M58 156 q22 -24 44 0 q22 24 44 0 q22 -24 44 0 q22 24 44 0 q22 -24 44 0 q20 22 40 0 l0 18 l-304 0 Z" fill="#74b23c"/>'+
+    '<path d="M64 176 l292 0 l-22 30 l-30 -18 l-30 24 l-32 -20 l-30 22 l-32 -20 l-28 20 l-26 -20 Z" fill="url(#chz)"/>'+
+    '<rect x="66" y="198" width="288" height="40" rx="20" fill="#5d3417"/>'+
+    '<rect x="66" y="198" width="288" height="13" rx="6" fill="#6f4220" opacity=".7"/>'+
+    '<path d="M64 232 q0 46 146 46 q146 0 146 -46 l0 -8 q0 -12 -146 -12 q-146 0 -146 12 Z" fill="url(#bunB)"/>'+
+    '</svg>';
+  $$('#posterDish,#sigPoster').forEach(function(p){p.innerHTML=POSTER;});
+
+  /* ---------------- CART — storage holds only {id, q}; everything else re-derived ---------------- */
+  var CART_KEY='hh-cart-v2', cart=[], lastRemoved=null, orderPlaced=false;
+  function parseId(id){var m=/^([a-z]+):(\d{1,2})$/.exec(String(id));if(!m)return null;return getItem(m[1],+m[2])?{cat:m[1],i:+m[2]}:null;}
+  function loadCart(){
+    var out=[];
+    try{
+      var raw=JSON.parse(localStorage.getItem(CART_KEY)||'[]');
+      if(Array.isArray(raw))raw.forEach(function(r){
+        if(!r||typeof r.id!=='string'||!parseId(r.id))return;
+        var q=Math.floor(Number(r.q));
+        if(!isFinite(q)||q<1)return;
+        if(out.some(function(l){return l.id===r.id;}))return;
+        out.push({id:r.id,q:Math.min(q,50)});
+      });
+    }catch(e){}
+    return out.slice(0,40);
+  }
+  cart=loadCart();
+  function save(){try{localStorage.setItem(CART_KEY,JSON.stringify(cart.map(function(l){return {id:l.id,q:l.q};})));}catch(e){}}
+  function lineItem(l){var p=parseId(l.id);return p?getItem(p.cat,p.i):null;}
+  function count(){return cart.reduce(function(s,l){return s+l.q;},0);}
+  function subtotal(){return cart.reduce(function(s,l){var it=lineItem(l);return s+(it?price(it.p)*l.q:0);},0);}
+
+  var fab=$('#cartFab'), fabCount=$('#cartCount');
+  var drawer=$('#cartDrawer'), body=$('#cartBody'), foot=$('#cartFoot'), drawerCount=$('#drawerCount');
+  function syncFab(){
+    fabCount.textContent=count();
+    fab.classList.remove('bump'); void fab.offsetWidth; fab.classList.add('bump');
+  }
+  function addToCart(cat,i){
+    var d=getItem(cat,i); if(!d)return;
+    var id=cat+':'+i, line=null;
+    for(var k=0;k<cart.length;k++){if(cart[k].id===id){line=cart[k];break;}}
+    if(line)line.q=Math.min(line.q+1,50);
+    else cart.push({id:id,q:1});
+    save(); syncFab(); updateDishControls(); toast('Added — '+d.n);
+    if(drawer.classList.contains('open'))renderCart();
+    if($('#checkout').classList.contains('open'))coRender();
+  }
+  function setQty(id,dq){
+    for(var k=0;k<cart.length;k++){
+      if(cart[k].id===id){
+        cart[k].q+=dq;
+        if(cart[k].q<=0){
+          lastRemoved={id:id,q:cart[k].q-dq};
+          var it=lineItem(cart[k]);
+          cart.splice(k,1);
+          toast('Removed'+(it?' — '+it.n:''),{label:'Undo',fn:function(){
+            if(lastRemoved&&parseId(lastRemoved.id)){cart.push({id:lastRemoved.id,q:lastRemoved.q});lastRemoved=null;save();syncFab();updateDishControls();renderCart();coRender();}
+          }});
+        }
+        break;
+      }
+    }
+    save(); syncFab(); updateDishControls(); renderCart(); coRender();
+  }
+  function minbarHTML(){
+    var s=subtotal(), pct=Math.min(100,Math.round(s/20*100));
+    if(s<=0)return '';
+    return '<div class="minbar"><div class="mb-label">'+
+      (s>=20?'<span><b>Delivery unlocked</b> · £20 minimum met</span>':'<span>Add <b>'+gbp(20-s)+'</b> to unlock delivery</span>')+
+      '<span>'+pct+'%</span></div>'+
+      '<div class="mb-track"><div class="mb-fill" style="width:'+pct+'%"></div></div></div>';
+  }
+  function renderCart(){
+    if(!drawer.classList.contains('open'))return;
+    drawerCount.textContent=count()?count()+(count()===1?' item':' items'):'';
+    if(!cart.length){
+      body.innerHTML='<div class="cart-empty">'+
+        '<svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 11h16M4 11a8 8 0 0 1 16 0M5 15h14a2 2 0 0 1 0 4H5a2 2 0 0 1 0-4z"/></svg>'+
+        '<p>Your order is empty — let\'s fix that.</p>'+
+        '<button type="button" class="btn btn-primary" id="ceBrowse">Browse the menu</button></div>';
+      foot.innerHTML='';
+      $('#ceBrowse').addEventListener('click',function(){closeOverlay(drawer);document.getElementById('menu').scrollIntoView({behavior:RM.matches?'auto':'smooth'});});
+      return;
+    }
+    body.innerHTML=cart.map(function(l,idx){
+      var it=lineItem(l); if(!it)return '';
+      return '<div class="cart-line" style="animation-delay:'+Math.min(idx*40,240)+'ms">'+
+        '<img src="'+imgsrc(it.img)+'" alt="">'+
+        '<div class="cl-info"><div class="cl-name">'+esc(it.n)+'</div><div class="cl-price">'+gbp(price(it.p)*l.q)+'</div></div>'+
+        '<div class="qty"><button type="button" data-q="-1" data-id="'+esc(l.id)+'" aria-label="Remove one '+esc(it.n)+'">−</button>'+
+        '<span class="q">'+l.q+'</span>'+
+        '<button type="button" data-q="1" data-id="'+esc(l.id)+'" aria-label="Add one '+esc(it.n)+'">+</button></div>'+
+      '</div>';
+    }).join('');
+    foot.innerHTML=minbarHTML()+
+      '<div class="subtotal"><span>Subtotal</span><span class="s">'+gbp(subtotal())+'</span></div>'+
+      '<button type="button" class="btn btn-primary" id="coNext">Checkout <span class="ar">→</span></button>'+
+      '<p class="cart-note">Collection &amp; delivery from both Sheffield spots · £20 minimum for delivery.</p>';
+    $('#coNext').addEventListener('click',openCheckout);
+  }
+  body.addEventListener('click',function(e){
+    var q=e.target.closest('[data-q]');
+    if(q)setQty(q.dataset.id,+q.dataset.q);
+  });
+  function openDrawer(){ openOverlay(drawer,'[data-cclose].modal-x'); renderCart(); }
+  fab.addEventListener('click',openDrawer);
+  drawer.addEventListener('click',function(e){if(e.target.closest('[data-cclose]'))closeOverlay(drawer);});
+  $('#ctaOrder').addEventListener('click',openDrawer);
+  $('#abOrder').addEventListener('click',function(e){e.preventDefault();openDrawer();});
+  syncFab(); fabCount.textContent=count();
+
+  /* cross-tab sync — revalidated through the same strict loader */
+  window.addEventListener('storage',function(e){
+    if(e.key!==CART_KEY)return;
+    cart=loadCart();
+    fabCount.textContent=count();
+    updateDishControls(); renderCart(); coRender();
+  });
+
+  /* ---------------- CHECKOUT — one calm screen ---------------- */
+  var checkout=$('#checkout'), coWrap=$('#coWrap'), coDone=$('#coDone'), coMode='Collection';
+  var coModeEl=$('#coMode'), coBranch=$('#coBranch'), coFields=$('#coFields');
+  function etaFor(post){
+    var p=String(post||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(!/^S\d/.test(p)) return null;
+    var out=p.length>4?p.slice(0,-3):p;          /* strip the inward code (e.g. "3DH") if present */
+    var m=out.match(/^S(\d{1,2})$/); if(!m) return null;
+    var n=parseInt(m[1],10);
+    if([1,2,3,6].indexOf(n)>-1) return '20–30 min';
+    if(n>=1&&n<=14) return '30–45 min';
+    return null;
+  }
+  function fieldHTML(id,label,attrs){
+    return '<div class="field" id="f-'+id+'"><label for="'+id+'">'+label+'</label>'+
+      '<input id="'+id+'" '+attrs+' aria-describedby="e-'+id+'">'+
+      '<p class="err" id="e-'+id+'" role="alert"></p></div>';
+  }
+  function setErr(id,msg){
+    var f=$('#f-'+id), inp=$('#'+id);
+    if(!f)return;
+    f.classList.toggle('bad',!!msg);
+    $('#e-'+id).textContent=msg||'';
+    if(inp)inp.setAttribute('aria-invalid',msg?'true':'false');
+  }
+  function vName(v){v=v.trim();if(v.length<2)return 'Add your name so the kitchen knows whose order this is.';if(v.length>60)return 'That name looks too long — 60 characters max.';return '';}
+  function vPhone(v){var n=v.replace(/[\s\-()]/g,'');if(!n)return 'Add a phone number so we can text you updates.';if(!/^(?:\+44\d{9,10}|0\d{9,10})$/.test(n))return 'Enter a UK number, e.g. 07123 456789.';return '';}
+  function vAddr(v){v=v.trim();if(v.length<5)return 'Add your house number and street.';if(v.length>120)return 'Keep the address under 120 characters.';return '';}
+  function vPost(v){
+    v=v.trim(); if(!v)return 'Add your postcode so we can route the driver.';
+    if(!/^S\d{1,2}\s?\d?[A-Z]{0,2}$/i.test(v))return 'Enter a Sheffield "S" postcode, e.g. S6 3DH.';
+    if(!etaFor(v))return 'Sorry — that postcode is outside our delivery zone. Collection is always available.';
+    return '';
+  }
+  function bindBlur(id,fn){var inp=$('#'+id);if(inp)inp.addEventListener('blur',function(){setErr(id,fn(inp.value));});}
+  function coRenderFields(){
+    if(coMode==='Delivery'){
+      coFields.innerHTML=
+        fieldHTML('cName','Name','type="text" autocomplete="name" placeholder="Your name" maxlength="60"')+
+        fieldHTML('cPhone','Phone','type="tel" autocomplete="tel" inputmode="tel" placeholder="07…" maxlength="16"')+
+        fieldHTML('cAddr','Address','type="text" autocomplete="street-address" placeholder="House number & street" maxlength="120"')+
+        fieldHTML('cPost','Postcode','type="text" autocomplete="postal-code" placeholder="e.g. S6 3DH" maxlength="8" autocapitalize="characters" style="text-transform:uppercase"');
+      coBranch.hidden=true;
+      $('#coCallbackWrap').hidden=true;
+      var post=$('#cPost'), t=null;
+      post.addEventListener('input',function(){clearTimeout(t);t=setTimeout(coUpdateEta,220);});
+      bindBlur('cAddr',vAddr); bindBlur('cPost',vPost);
+    } else {
+      coFields.innerHTML=
+        fieldHTML('cName','Name','type="text" autocomplete="name" placeholder="Your name" maxlength="60"')+
+        fieldHTML('cPhone','Phone','type="tel" autocomplete="tel" inputmode="tel" placeholder="07…" maxlength="16"');
+      coBranch.hidden=false;
+      $('#coCallbackWrap').hidden=false;
+    }
+    bindBlur('cName',vName); bindBlur('cPhone',vPhone);
+    coUpdateEta(); coUpdateBanner();
+  }
+  function branchName(){var r=$('input[name="branch"]:checked',coBranch);return r?r.value:'Infirmary Road';}
+  function coUpdateEta(){
+    var eta=$('#coEta');
+    if(coMode==='Collection'){
+      eta.hidden=false;
+      eta.innerHTML='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Ready for collection from <b>'+esc(branchName())+'</b> in about <b>15–20 min</b>.</span>';
+      return;
+    }
+    var v=(($('#cPost')||{}).value||'').trim();
+    if(!v){ eta.hidden=true; return; }
+    var e=etaFor(v);
+    eta.hidden=false;
+    eta.innerHTML=e?'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="17" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M6 17h6V7h4l3 5v5h-1"/></svg><span>Estimated delivery to <b>'+esc(v.toUpperCase())+'</b>: <b>'+e+'</b></span>'
+                   :'<span>Sorry — that postcode is outside our delivery zone.</span>';
+  }
+  function coUpdateBanner(){
+    var b=$('#coBanner'), place=$('#coPlace'), s=subtotal();
+    if(coMode==='Delivery'){
+      b.hidden=false;
+      var pct=Math.min(100,Math.round(s/20*100));
+      if(s<20){
+        b.className='co-banner warn';
+        b.innerHTML='<div style="flex:1">Delivery has a <b>£20 minimum</b> — add '+gbp(20-s)+' more, or switch to collection.'+
+          '<div class="mb-track"><div class="mb-fill" style="width:'+pct+'%"></div></div></div>';
+        place.disabled=true;
+      } else {
+        b.className='co-banner';
+        b.innerHTML='<div style="flex:1">£20 delivery minimum met — you\'re good to go.</div>';
+        place.disabled=cart.length===0;
+      }
+    } else {
+      b.hidden=true;
+      place.disabled=cart.length===0;
+    }
+    place.textContent='Place order · '+gbp(s);
+  }
+  function coRenderLines(){
+    $('#coLines').innerHTML=cart.map(function(l){
+      var it=lineItem(l); if(!it)return '';
+      return '<div class="co-line"><img src="'+imgsrc(it.img)+'" alt="">'+
+        '<div class="n">'+esc(it.n)+'<small>'+gbp(price(it.p))+' each</small></div>'+
+        '<div class="qty"><button type="button" data-q="-1" data-id="'+esc(l.id)+'" aria-label="Remove one '+esc(it.n)+'">−</button>'+
+        '<span class="q">'+l.q+'</span>'+
+        '<button type="button" data-q="1" data-id="'+esc(l.id)+'" aria-label="Add one '+esc(it.n)+'">+</button></div>'+
+        '<div class="p">'+gbp(price(it.p)*l.q)+'</div></div>';
+    }).join('')||'<p style="color:var(--muted);padding:10px 0">Your order is empty — close checkout and add something tasty.</p>';
+    $('#coTotal').textContent=gbp(subtotal());
+  }
+  function coRender(){
+    if(!checkout.classList.contains('open')||coWrap.style.display==='none')return;
+    coRenderLines(); coUpdateBanner();
+  }
+  $('#coLines').addEventListener('click',function(e){
+    var q=e.target.closest('[data-q]');
+    if(q)setQty(q.dataset.id,+q.dataset.q);
+  });
+  coModeEl.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-m]'); if(!b)return;
+    $$('button[data-m]',coModeEl).forEach(function(x){x.classList.remove('on');x.setAttribute('aria-checked','false');});
+    b.classList.add('on'); b.setAttribute('aria-checked','true');
+    coMode=b.dataset.m;
+    coModeEl.dataset.on=coMode==='Delivery'?'1':'0';
+    coRenderFields();
+  });
+  coBranch.addEventListener('change',coUpdateEta);
+  function setSteps(stage){ /* 2 = details, 3 = done */
+    $('#st2').classList.toggle('on',stage===2);
+    $('#st2').classList.toggle('done',stage===3);
+    $('#st3').classList.toggle('on',stage===3);
+  }
+  function openCheckout(){
+    if(!cart.length){toast('Your order is empty');return;}
+    closeOverlay(drawer);
+    orderPlaced=false;
+    coDone.hidden=true; coWrap.style.display='';
+    setSteps(2);
+    coRenderFields(); coRenderLines(); coUpdateBanner();
+    checkout.scrollTop=0;
+    openOverlay(checkout,'#cName');
+  }
+  function hideCheckout(){ closeOverlay(checkout); }
+  $('#coClose').addEventListener('click',hideCheckout);
+  $('#coPlace').addEventListener('click',function(){
+    if(!cart.length){toast('Your order is empty');return;}
+    if(($('#hpField').value||'')!==''){toast('Something went wrong — please call us to order.');return;} /* honeypot */
+    var nm=(($('#cName')||{}).value||'').trim();
+    var ph=(($('#cPhone')||{}).value||'').trim();
+    var errs=[['cName',vName(nm)],['cPhone',vPhone(ph)]];
+    var ad='',po='',e='';
+    if(coMode==='Delivery'){
+      ad=(($('#cAddr')||{}).value||'').trim();
+      po=(($('#cPost')||{}).value||'').trim();
+      errs.push(['cAddr',vAddr(ad)],['cPost',vPost(po)]);
+    }
+    var firstBad=null;
+    errs.forEach(function(pair){ setErr(pair[0],pair[1]); if(pair[1]&&!firstBad)firstBad=pair[0]; });
+    if(firstBad){$('#'+firstBad).focus();return;}
+    if(coMode==='Delivery'){
+      e=etaFor(po);
+      if(subtotal()<20){toast('Delivery minimum is £20');return;}
+    }
+    var extra, branch=branchName();
+    if(coMode==='Delivery'){ extra='Delivery to '+po.toUpperCase()+' · estimated '+e; }
+    else { extra='Collection from '+branch+' in 15–20 min'+($('#coCallback').checked?' · we\'ll call you back to confirm':''); }
+    /* order ref via CSPRNG */
+    var ref='HH-';
+    try{var a=new Uint32Array(1);crypto.getRandomValues(a);ref+=String(1000+(a[0]%9000));}catch(err){ref+=String(1000+Math.floor(Math.random()*9000));}
+    var total=subtotal();
+    cart=[]; save(); syncFab(); updateDishControls(); orderPlaced=true;
+    coWrap.style.display='none'; coDone.hidden=false;
+    setSteps(3);
+    coDone.innerHTML='<svg class="ok" viewBox="0 0 56 56" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="28" cy="28" r="26" stroke="currentColor"/><path d="M17 29.5l7.5 7.5L39 21" stroke="currentColor"/></svg>'+
+      '<div class="big">Order received!</div>'+
+      '<p class="ref">'+ref+' · '+gbp(total)+'</p>'+
+      '<p>'+esc(extra)+'</p>'+
+      '<p>Thanks '+esc(nm)+' — we\'ll text '+esc(ph)+' with updates.</p>'+
+      '<p style="font-size:.78rem">(Demo flow — in production this fires straight to the kitchen / EPOS.)</p>'+
+      '<button type="button" class="btn btn-gold" id="coBack">Back to the site</button>';
+    coDone.scrollIntoView({behavior:RM.matches?'auto':'smooth',block:'start'});
+    $('#coBack').addEventListener('click',hideCheckout);
+  });
+
+  /* ---------------- SUPPORT HUB ---------------- */
+  var helpFab=$('#helpFab'), helpPanel=$('#helpPanel');
+  helpFab.addEventListener('click',function(){
+    if(helpPanel.classList.contains('open')){closeOverlay(helpPanel);helpFab.setAttribute('aria-expanded','false');}
+    else {openOverlay(helpPanel,'[data-hclose].modal-x');helpFab.setAttribute('aria-expanded','true');applyStatus();}
+  });
+  helpPanel.addEventListener('click',function(e){
+    if(e.target.closest('[data-hclose]')){closeOverlay(helpPanel);helpFab.setAttribute('aria-expanded','false');}
+  });
+
+  /* ---------------- scroll reveal + count-up stats ---------------- */
+  (function(){
+    var reveals=$$('.reveal');
+    reveals.forEach(function(el){
+      var sibs=[].slice.call(el.parentElement.children).filter(function(c){return c.classList.contains('reveal');});
+      var i=sibs.indexOf(el);
+      if(i>0) el.style.transitionDelay=Math.min(i*70,360)+'ms';
+    });
+    function countUp(el){
+      var target=parseFloat(el.dataset.count), dec=+(el.dataset.decimals||0), suf=el.dataset.suffix||'';
+      if(!isFinite(target))return;
+      var t0=null, dur=1100;
+      function step(ts){
+        if(!t0)t0=ts;
+        var p=Math.min(1,(ts-t0)/dur), ease=1-Math.pow(1-p,3);
+        el.textContent=(target*ease).toFixed(dec)+suf;
+        if(p<1)requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(en){
+        en.forEach(function(e){
+          if(!e.isIntersecting)return;
+          e.target.classList.add('in');
+          $$('[data-count]',e.target).forEach(countUp);
+          io.unobserve(e.target);
+        });
+      },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+      reveals.forEach(function(el){io.observe(el);});
+    } else {
+      reveals.forEach(function(el){el.classList.add('in');});
+      $$('[data-count]').forEach(function(el){el.textContent=parseFloat(el.dataset.count).toFixed(+(el.dataset.decimals||0))+(el.dataset.suffix||'');});
+    }
+  })();
+
+  /* ---------------- tilt + glare (mouse only, motion-safe) ---------------- */
+  function makeTilt(el,max){
+    el.classList.add('tilt');
+    var g=document.createElement('span'); g.className='glx'; el.appendChild(g);
+    var raf=0,rx=0,ry=0;
+    function move(e){
+      var r=el.getBoundingClientRect();
+      var px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+      ry=(px-0.5)*max*2; rx=(0.5-py)*max*2;
+      el.style.setProperty('--gx',(px*100)+'%'); el.style.setProperty('--gy',(py*100)+'%');
+      if(!raf) raf=requestAnimationFrame(function(){raf=0;el.style.transform='perspective(820px) rotateX('+rx+'deg) rotateY('+ry+'deg)';});
+    }
+    el.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'){el.style.transitionDelay='0s';el.classList.add('tilting');}});
+    el.addEventListener('pointermove',function(e){if(e.pointerType==='mouse')move(e);});
+    el.addEventListener('pointerleave',function(){el.classList.remove('tilting');el.style.transform='';});
+  }
+  function bindTilts(){
+    if(!FINE) return;
+    $$('.gal-item:not(.tilt)').forEach(function(el){makeTilt(el,9);});
+    $$('.rev:not(.tilt),.loc:not(.tilt)').forEach(function(el){makeTilt(el,6);});
+    $$('#menuGrid .dish:not(.tilt)').forEach(function(el){makeTilt(el,8);});
+    $$('.vcard:not(.tilt)').forEach(function(el){makeTilt(el,7);});
+  }
+
+  /* ---------------- hero mouse parallax + gallery scroll parallax (single rAF) ---------------- */
+  (function(){
+    var hero=$('.hero');
+    var layers=[
+      [$('.hero .eyebrow'),20,12],
+      [$('.hero h1'),34,18],
+      [$('.hero .lede'),18,10],
+      [$('.hero .hero-cta'),12,7],
+      [$('.hero .hero-meta'),9,5]
+    ].filter(function(l){return l[0];});
+    var galImgs=$$('.gal-item img');
+    var mx=0,my=0,tx=0,ty=0,queued=false;
+    function schedule(){ if(!queued){ queued=true; requestAnimationFrame(frame); } }
+    function frame(){
+      queued=false;
+      mx+=(tx-mx)*0.09; my+=(ty-my)*0.09;
+      if(hero && FINE && window.scrollY<hero.offsetHeight){
+        for(var i=0;i<layers.length;i++){ var l=layers[i];
+          l[0].style.transform='translate3d('+(mx*l[1])+'px,'+(my*l[2])+'px,0)'; }
+      }
+      for(var j=0;j<galImgs.length;j++){
+        var img=galImgs[j], r=img.parentElement.getBoundingClientRect();
+        if(r.bottom>-40 && r.top<innerHeight+40){
+          var prog=(r.top+r.height/2)/innerHeight-0.5;
+          img.style.transform='translateY('+(prog*-9)+'px)';
+        }
+      }
+      if(Math.abs(tx-mx)>0.001||Math.abs(ty-my)>0.001) schedule();
+    }
+    if(FINE && hero) addEventListener('pointermove',function(e){ if(e.pointerType&&e.pointerType!=='mouse')return; tx=(e.clientX/innerWidth-0.5)*2; ty=(e.clientY/innerHeight-0.5)*2; schedule(); },{passive:true});
+    addEventListener('scroll',schedule,{passive:true});
+    addEventListener('resize',schedule,{passive:true});
+    frame();
+  })();
+
+  /* boot */
+  renderMenu('steaks');
+  bindTilts();
+})();
+</script>
+
+<!-- Import map so the lazy 3D module resolves a PINNED three.js only when actually fetched.
+     Production hardening: self-host these two files and add SRI, or keep the exact pin. -->
+<script type="importmap">
+{ "imports": {
+  "three":"https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+} }
+</script>
+
+<!-- ===================== THE 3D MOMENTS (hero + signature — lazy, self-contained) =====================
+     Three.js is fetched once, after load, and each burger stage mounts only as it nears the
+     viewport. Skipped on Save-Data, low device memory, or any WebGL/load failure — the static
+     SVG poster simply remains. Each stage renders only while on-screen, so at most one burger
+     animates at a time. -->
+<script type="module">
+(function(){
+  var stages=[].slice.call(document.querySelectorAll('.burger3d'));
+  if(!stages.length || !('IntersectionObserver' in window)) return;
+  if(navigator.connection && navigator.connection.saveData) return;
+  if(navigator.deviceMemory && navigator.deviceMemory<=2) return;
+
+  var libsP=null;
+  function libs(){ if(!libsP) libsP=Promise.all([import('three'),import('three/addons/environments/RoomEnvironment.js'),import('three/addons/loaders/GLTFLoader.js')]); return libsP; }
+  function mount(stage){
+    if(stage.dataset.m) return; stage.dataset.m='1';
+    libs().then(function(m){ try{ build(m[0], m[1].RoomEnvironment, stage, m[2].GLTFLoader); }catch(err){ console.error('burger3d build failed',err); } })
+          .catch(function(err){ console.error('burger3d import failed',err); });
+  }
+  function arm(stage){
+    if(document.readyState==='complete') setTimeout(function(){mount(stage);},150);
+    else window.addEventListener('load',function(){ setTimeout(function(){mount(stage);},150); });
+  }
+  /* each burger mounts only as it nears the viewport — the hero is in view, so it loads first */
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ io.unobserve(e.target); arm(e.target); } });
+  },{rootMargin:'300px 0px'});
+  stages.forEach(function(s){ io.observe(s); });
+
+  function build(THREE, RoomEnvironment, stage, GLTFLoader){
+    var W=stage.clientWidth||1, H=stage.clientHeight||1, fit=stage.id==='heroScene'?3.35:3.35;
+    var shadows=matchMedia('(min-width:760px)').matches;
+
+    var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    renderer.setSize(W,H);
+    if(shadows){ renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap; }
+    renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=0.95;
+    renderer.domElement.classList.add('three-canvas');
+    stage.appendChild(renderer.domElement);
+
+    var scene=new THREE.Scene();
+    var cam=new THREE.PerspectiveCamera(40,W/H,0.1,100);
+    cam.position.set(0,1.0,5.4); cam.lookAt(0,-0.06,0);
+
+    var pmrem=new THREE.PMREMGenerator(renderer);
+    scene.environment=pmrem.fromScene(new RoomEnvironment(),0.04).texture;
+
+    var key=new THREE.DirectionalLight(0xfff1d6,1.4); key.position.set(4,7,5); key.castShadow=shadows;
+    key.shadow.mapSize.set(1024,1024); key.shadow.camera.near=1; key.shadow.camera.far=30;
+    key.shadow.bias=-0.0003; key.shadow.normalBias=0.02;
+    Object.assign(key.shadow.camera,{left:-6,right:6,top:6,bottom:-6}); scene.add(key);
+    var rim=new THREE.DirectionalLight(0xf2b705,0.8); rim.position.set(-6,3,-5); scene.add(rim);
+    scene.add(new THREE.HemisphereLight(0xfff3da,0x140f06,0.5));
+
+    if(shadows){
+      var ground=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.ShadowMaterial({opacity:.28}));
+      ground.rotation.x=-Math.PI/2; ground.position.y=-fit/2-0.05; ground.receiveShadow=true; scene.add(ground);
+    }
+
+    /* procedural canvas textures — zero network requests */
+    function tx(draw,size,srgb){ size=size||256; var c=document.createElement('canvas'); c.width=c.height=size; draw(c.getContext('2d'),size); var t=new THREE.CanvasTexture(c); t.colorSpace=(srgb===false)?THREE.NoColorSpace:THREE.SRGBColorSpace; t.wrapS=t.wrapT=THREE.RepeatWrapping; t.anisotropy=8; return t; }
+    var T={
+      bun: tx(function(x,s){var g=x.createRadialGradient(s*.5,s*.42,s*.05,s*.5,s*.5,s*.62);g.addColorStop(0,'#f1c277');g.addColorStop(.55,'#e0a24c');g.addColorStop(1,'#bf7a2c');x.fillStyle=g;x.fillRect(0,0,s,s);for(var i=0;i<2000;i++){var px=Math.random()*s,py=Math.random()*s,r=Math.random()*1.9;x.fillStyle='rgba('+(Math.random()<.5?'150,95,40':'255,228,175')+','+(Math.random()*.26)+')';x.beginPath();x.arc(px,py,r,0,7);x.fill();}}),
+      bunB: tx(function(x,s){x.fillStyle='#808080';x.fillRect(0,0,s,s);for(var i=0;i<4200;i++){var px=Math.random()*s,py=Math.random()*s,r=Math.random()*2.4;var v=Math.random()<.5?40+Math.random()*40:200+Math.random()*55;x.fillStyle='rgba('+v+','+v+','+v+','+(Math.random()*.5)+')';x.beginPath();x.arc(px,py,r,0,7);x.fill();}},256,false),
+      meat: tx(function(x,s){x.fillStyle='#46260f';x.fillRect(0,0,s,s);for(var i=0;i<5200;i++){var px=Math.random()*s,py=Math.random()*s,r=Math.random()*3+1,c=Math.random();x.fillStyle=c<.35?'rgba(74,38,15,'+(Math.random()*.6+.3)+')':c<.62?'rgba(122,68,30,'+(Math.random()*.5+.2)+')':c<.82?'rgba(38,19,8,'+(Math.random()*.7)+')':'rgba(186,128,66,'+(Math.random()*.35)+')';x.beginPath();x.arc(px,py,r,0,7);x.fill();}for(var j=0;j<60;j++){var qx=Math.random()*s,qy=Math.random()*s,qr=Math.random()*6+2;x.fillStyle='rgba(18,9,4,'+(Math.random()*.5+.2)+')';x.beginPath();x.arc(qx,qy,qr,0,7);x.fill();}}),
+      cheese: tx(function(x,s){var g=x.createLinearGradient(0,0,s,s);g.addColorStop(0,'#ffc83f');g.addColorStop(1,'#f3992a');x.fillStyle=g;x.fillRect(0,0,s,s);for(var i=0;i<400;i++){var px=Math.random()*s,py=Math.random()*s,r=Math.random()*2.4;x.fillStyle='rgba(255,232,155,'+(Math.random()*.4)+')';x.beginPath();x.arc(px,py,r,0,7);x.fill();}}),
+      lettuce: tx(function(x,s){var g=x.createLinearGradient(0,0,0,s);g.addColorStop(0,'#80bd3e');g.addColorStop(1,'#4d8a21');x.fillStyle=g;x.fillRect(0,0,s,s);for(var i=0;i<500;i++){var px=Math.random()*s,py=Math.random()*s;x.strokeStyle='rgba('+(Math.random()<.5?'185,222,125':'58,104,28')+','+(Math.random()*.32)+')';x.lineWidth=Math.random()*1.5;x.beginPath();x.moveTo(px,py);x.lineTo(px+Math.random()*22-11,py+Math.random()*22-11);x.stroke();}}),
+      tomato: tx(function(x,s){var g=x.createRadialGradient(s/2,s/2,s*.05,s/2,s/2,s*.5);g.addColorStop(0,'#ee6a47');g.addColorStop(.55,'#d23420');g.addColorStop(1,'#a82114');x.fillStyle=g;x.fillRect(0,0,s,s);x.fillStyle='rgba(255,214,178,.5)';for(var i=0;i<6;i++){x.save();x.translate(s/2,s/2);x.rotate(i*Math.PI/3);x.beginPath();x.ellipse(0,s*.2,s*.05,s*.12,0,0,7);x.fill();x.restore();}})
+    };
+    var M={
+      bun:new THREE.MeshPhysicalMaterial({map:T.bun,bumpMap:T.bunB,bumpScale:.06,roughness:.72,metalness:0,sheen:.25,sheenColor:new THREE.Color(0xc98a3a),sheenRoughness:.8,envMapIntensity:.7}),
+      sesame:new THREE.MeshStandardMaterial({color:0xecd7a0,roughness:.45,metalness:0}),
+      patty:new THREE.MeshPhysicalMaterial({map:T.meat,bumpMap:T.bunB,bumpScale:.05,roughness:.5,metalness:.02,clearcoat:.5,clearcoatRoughness:.5,envMapIntensity:1}),
+      cheese:new THREE.MeshPhysicalMaterial({map:T.cheese,bumpMap:T.bunB,bumpScale:.012,roughness:.4,metalness:0,clearcoat:.5,clearcoatRoughness:.3,emissive:0x3a2400,emissiveIntensity:.04,side:THREE.DoubleSide,envMapIntensity:.75}),
+      lettuce:new THREE.MeshPhysicalMaterial({map:T.lettuce,roughness:.5,metalness:0,sheen:.5,sheenColor:new THREE.Color(0x9fd45a),clearcoat:.2,clearcoatRoughness:.4,side:THREE.DoubleSide,envMapIntensity:.9}),
+      sauce:new THREE.MeshPhysicalMaterial({color:0xf6e7bf,roughness:.18,metalness:0,clearcoat:.8,clearcoatRoughness:.15,envMapIntensity:1.2}),
+      tomato:new THREE.MeshPhysicalMaterial({map:T.tomato,roughness:.3,metalness:0,clearcoat:.6,clearcoatRoughness:.25,envMapIntensity:1.05}),
+      onion:new THREE.MeshPhysicalMaterial({color:0xf3ead8,roughness:.35,metalness:0,transparent:true,opacity:.62,clearcoat:.4,clearcoatRoughness:.3,envMapIntensity:.8}),
+      pickle:new THREE.MeshPhysicalMaterial({color:0x5d7a23,roughness:.38,metalness:0,clearcoat:.7,clearcoatRoughness:.25,envMapIntensity:.9})
+    };
+
+    function lathe(pts,mat,seg){var g=new THREE.LatheGeometry(pts.map(function(p){return new THREE.Vector2(p[0],p[1]);}),seg||64);g.computeVertexNormals();var m=new THREE.Mesh(g,mat);m.castShadow=m.receiveShadow=true;return m;}
+    function makeCheese(size,y,spin){var seg=24,geo=new THREE.PlaneGeometry(size,size,seg,seg),p=geo.attributes.position;for(var i=0;i<p.count;i++){var x=p.getX(i),z=p.getY(i),e=Math.max(Math.abs(x),Math.abs(z))/(size/2);p.setZ(i,-0.26*Math.pow(Math.max(0,e),3)+Math.sin(x*9)*0.006);}geo.computeVertexNormals();var m=new THREE.Mesh(geo,M.cheese);m.rotation.x=-Math.PI/2;m.castShadow=true;var grp=new THREE.Group();grp.add(m);grp.position.y=y;grp.rotation.y=spin;return grp;}
+    function makeLettuce(ri,ro,y){var geo=new THREE.RingGeometry(ri,ro,64,6),p=geo.attributes.position;for(var i=0;i<p.count;i++){var x=p.getX(i),z=p.getY(i),r=Math.hypot(x,z),a=Math.atan2(z,x),t=(r-ri)/(ro-ri);p.setZ(i,(Math.sin(a*9)*0.11+Math.sin(a*17+1.3)*0.05)*t+(Math.random()-0.5)*0.012);}geo.computeVertexNormals();var m=new THREE.Mesh(geo,M.lettuce);m.rotation.x=-Math.PI/2;m.position.y=y;m.castShadow=m.receiveShadow=true;return m;}
+    function buildBurger(){
+      var g=new THREE.Group(),RB=1.16,RP=1.04;
+      g.add(lathe([[0,0],[RB*0.84,0],[RB,0.18],[RB*0.98,0.4],[RB*0.74,0.52],[RB*0.4,0.57],[0,0.55]],M.bun,96));
+      var y=0.52;
+      g.add(makeLettuce(0.62,1.34,y+0.05));y+=0.08;
+      var p1=lathe([[0,0],[RP*0.92,0],[RP,0.16],[RP*0.92,0.3],[0,0.3]],M.patty,72);p1.position.y=y;g.add(p1);y+=0.3;
+      g.add(makeCheese(2.1,y+0.01,0.3));y+=0.05;
+      var t1=lathe([[0,0],[0.88,0],[0.95,0.05],[0.88,0.1],[0,0.1]],M.tomato,64);t1.position.set(0.16,y,0.1);g.add(t1);
+      var t2=lathe([[0,0],[0.84,0],[0.91,0.05],[0.84,0.1],[0,0.1]],M.tomato,64);t2.position.set(-0.34,y+0.01,-0.18);g.add(t2);
+      y+=0.11;
+      var oPos=[[0.42,0.12],[-0.4,-0.08],[0.05,-0.42]];
+      for(var o=0;o<3;o++){
+        var ring=new THREE.Mesh(new THREE.TorusGeometry(0.34-o*0.05,0.045,12,28),M.onion);
+        ring.rotation.x=Math.PI/2;ring.position.set(oPos[o][0],y+0.02,oPos[o][1]);
+        ring.castShadow=true;g.add(ring);
+      }
+      y+=0.06;
+      var p2=lathe([[0,0],[RP*0.9,0],[RP*0.98,0.16],[RP*0.9,0.3],[0,0.3]],M.patty,72);p2.position.y=y;g.add(p2);y+=0.3;
+      g.add(makeCheese(2.16,y+0.01,Math.PI/4+0.3));y+=0.05;
+      var kPos=[[0.38,0.22],[-0.34,0.05],[0.02,-0.4]];
+      for(var pk=0;pk<3;pk++){
+        var pick=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.05,22),M.pickle);
+        pick.position.set(kPos[pk][0],y+0.03,kPos[pk][1]);
+        pick.rotation.set((Math.random()-0.5)*0.3,Math.random()*3,(Math.random()-0.5)*0.3);
+        pick.castShadow=true;g.add(pick);
+      }
+      y+=0.05;
+      for(var i=0;i<12;i++){var a=Math.random()*7,r=1.0+Math.random()*0.14,b=new THREE.Mesh(new THREE.SphereGeometry(0.06+Math.random()*0.05,16,16),M.sauce);b.position.set(Math.cos(a)*r,0.78+Math.random()*0.7,Math.sin(a)*r);b.scale.y=0.6;b.castShadow=true;g.add(b);}
+      var HC=0.78,RC=1.15,tb=lathe([[0,0],[RC,0],[RC,0.05],[RC*0.985,HC*0.3],[RC*0.9,HC*0.58],[RC*0.66,HC*0.82],[RC*0.36,HC*0.95],[0,HC]],M.bun,96);
+      tb.position.y=y+0.02;g.add(tb);
+      var seedG=new THREE.SphereGeometry(0.05,8,6),up=new THREE.Vector3(0,1,0);
+      for(var k=0;k<34;k++){var aa=Math.random()*7,u=Math.pow(Math.random(),0.7)*0.84,rr=RC*u,sy=HC*Math.sqrt(Math.max(0,1-u*u)),seed=new THREE.Mesh(seedG,M.sesame);seed.position.set(Math.cos(aa)*rr,y+0.02+sy,Math.sin(aa)*rr);seed.scale.set(1.6,0.5,1.0);seed.quaternion.setFromUnitVectors(up,new THREE.Vector3(Math.cos(aa)*u/RC,Math.sqrt(Math.max(0.001,1-u*u))/HC,Math.sin(aa)*u/RC).normalize());seed.rotateY(Math.random()*7);seed.castShadow=true;g.add(seed);}
+      return g;
+    }
+
+    /* ---- Signature stack: crispy fried chicken, dripping molten cheese & a sesame crown (built to match the reference image) ---- */
+    function buildSmashChicken(){
+      var g=new THREE.Group(),RB=1.12,RTC=1.1,HC=0.82,LETT=1.30;
+
+      /* procedural crispy-chicken + molten-cheese textures (local, zero extra network requests) */
+      var chkTex=tx(function(x,s){
+        var g0=x.createRadialGradient(s*.5,s*.44,s*.05,s*.5,s*.5,s*.62);
+        g0.addColorStop(0,'#e49a44');g0.addColorStop(.5,'#bf6f28');g0.addColorStop(1,'#854a17');
+        x.fillStyle=g0;x.fillRect(0,0,s,s);
+        for(var i=0;i<5400;i++){var px=Math.random()*s,py=Math.random()*s,r=Math.random()*2.6+.4,c=Math.random();
+          x.fillStyle=c<.4?'rgba(242,198,120,'+(Math.random()*.5+.2)+')':c<.7?'rgba(120,66,22,'+(Math.random()*.55+.2)+')':c<.88?'rgba(70,36,12,'+(Math.random()*.6)+')':'rgba(255,226,162,'+(Math.random()*.4)+')';
+          x.beginPath();x.arc(px,py,r,0,7);x.fill();}
+        for(var j=0;j<150;j++){var qx=Math.random()*s,qy=Math.random()*s,qr=Math.random()*5+2;
+          x.fillStyle=Math.random()<.5?'rgba(66,34,12,'+(Math.random()*.5+.2)+')':'rgba(228,172,98,'+(Math.random()*.45+.2)+')';
+          x.beginPath();x.arc(qx,qy,qr,0,7);x.fill();}
+      });
+      var chkBump=tx(function(x,s){x.fillStyle='#808080';x.fillRect(0,0,s,s);
+        for(var i=0;i<6400;i++){var px=Math.random()*s,py=Math.random()*s,r=Math.random()*3+.6;var v=Math.random()<.5?28+Math.random()*60:188+Math.random()*66;x.fillStyle='rgba('+v+','+v+','+v+','+(Math.random()*.7)+')';x.beginPath();x.arc(px,py,r,0,7);x.fill();}},256,false);
+      var sauceTex=tx(function(x,s){var g0=x.createLinearGradient(0,0,s,s);g0.addColorStop(0,'#ffd257');g0.addColorStop(.5,'#ffae27');g0.addColorStop(1,'#f0901a');x.fillStyle=g0;x.fillRect(0,0,s,s);
+        for(var i=0;i<600;i++){var px=Math.random()*s,py=Math.random()*s,r=Math.random()*3;x.fillStyle='rgba(255,231,156,'+(Math.random()*.45)+')';x.beginPath();x.arc(px,py,r,0,7);x.fill();}
+        for(var j=0;j<120;j++){var qx=Math.random()*s,qy=Math.random()*s,qr=Math.random()*5+1;x.fillStyle='rgba(214,118,16,'+(Math.random()*.32)+')';x.beginPath();x.arc(qx,qy,qr,0,7);x.fill();}});
+
+      var chkMat=new THREE.MeshPhysicalMaterial({map:chkTex,bumpMap:chkBump,bumpScale:.13,roughness:.6,metalness:.02,clearcoat:.32,clearcoatRoughness:.55,sheen:.22,sheenColor:new THREE.Color(0xd98b3a),envMapIntensity:.95});
+      var sauceMat=new THREE.MeshPhysicalMaterial({map:sauceTex,roughness:.26,metalness:0,clearcoat:.85,clearcoatRoughness:.2,sheen:.4,sheenColor:new THREE.Color(0xffd070),emissive:0x3a2200,emissiveIntensity:.06,side:THREE.DoubleSide,envMapIntensity:1.1});
+      g.userData.sauceMat=sauceMat;
+
+      /* deterministic per-vertex jitter (shared verts hash identically — no cracks on the non-indexed shell) */
+      function hash(a,b,c){var v=Math.sin(a*12.9898+b*78.233+c*37.719)*43758.5453;return v-Math.floor(v);}
+      function makeFillet(){
+        var geo=new THREE.IcosahedronGeometry(1,4),p=geo.attributes.position,v=new THREE.Vector3();
+        for(var i=0;i<p.count;i++){v.fromBufferAttribute(p,i);
+          var n=0.16*Math.sin(v.x*5+v.y*3)+0.11*Math.sin(v.z*6.3-v.x*4.1)+0.07*Math.sin(v.y*9.7+v.z*7.3)+0.05*Math.sin(v.x*15+v.z*13)+(hash(v.x,v.y,v.z)-0.5)*0.09;
+          var f=1+n;p.setXYZ(i,v.x*f,v.y*f,v.z*f);}
+        geo.computeVertexNormals();var m=new THREE.Mesh(geo,chkMat);m.castShadow=m.receiveShadow=true;return m;
+      }
+      function makeSauceDisc(rad,y,spin){
+        var geo=new THREE.RingGeometry(0.001,rad,56,7),p=geo.attributes.position;
+        for(var i=0;i<p.count;i++){var u=p.getX(i),w=p.getY(i),r=Math.hypot(u,w),a=Math.atan2(w,u),t=r/rad,
+            lobe=1+0.08*Math.sin(a*6+0.5)+0.045*Math.sin(a*11+1.0),
+            droop=-0.64*Math.pow(t,2.2),ripple=Math.sin(a*9+r*6)*0.018*t;
+          p.setX(i,u*lobe);p.setY(i,w*lobe);p.setZ(i,droop+ripple);}
+        geo.computeVertexNormals();var m=new THREE.Mesh(geo,sauceMat);m.rotation.x=-Math.PI/2;m.castShadow=true;
+        var grp=new THREE.Group();grp.add(m);grp.position.y=y;grp.rotation.y=spin||0;return grp;
+      }
+      function makeDrip(rTop,len){
+        var pts=[[rTop,0],[rTop*0.72,-len*0.12],[rTop*0.4,-len*0.5],[rTop*0.3,-len*0.72],[rTop*0.62,-len*0.87],[rTop*0.72,-len*0.93],[rTop*0.34,-len*0.99],[0,-len]];
+        var geo=new THREE.LatheGeometry(pts.map(function(pp){return new THREE.Vector2(pp[0],pp[1]);}),18);
+        geo.computeVertexNormals();var m=new THREE.Mesh(geo,sauceMat);m.castShadow=true;return m;
+      }
+
+      /* bottom bun (tall, glossy brioche) */
+      g.add(lathe([[0,0],[RB*0.66,0],[RB*0.92,0.07],[RB,0.24],[RB*0.99,0.44],[RB*0.84,0.58],[RB*0.46,0.64],[0,0.63]],M.bun,96));
+      /* crispy fried chicken fillets — craggy, breaded, stacked */
+      var fA=makeFillet();fA.scale.set(0.8,0.34,0.64);fA.position.set(0.34,0.82,0.05);fA.rotation.y=0.5;g.add(fA);
+      var fB=makeFillet();fB.scale.set(0.78,0.33,0.62);fB.position.set(-0.36,0.8,-0.06);fB.rotation.y=-0.7;g.add(fB);
+      var fC=makeFillet();fC.scale.set(0.64,0.3,0.52);fC.position.set(0.02,0.82,-0.36);fC.rotation.y=1.3;g.add(fC);
+      /* molten cheese draped over the chicken + drips cascading down the sides */
+      g.add(makeSauceDisc(1.16,1.2,0.2));
+      var drN=10;
+      for(var d=0;d<drN;d++){var aa=(d/drN)*Math.PI*2+Math.random()*0.32,rr=RB*0.86+Math.random()*0.16,len=0.46+Math.random()*0.72,dr=makeDrip(0.085+Math.random()*0.05,len);dr.position.set(Math.cos(aa)*rr,1.12,Math.sin(aa)*rr);g.add(dr);}
+      /* tomato slice */
+      var tom=lathe([[0,0],[0.9,0],[0.97,0.05],[0.9,0.1],[0,0.1]],M.tomato,64);tom.position.set(0.05,1.3,0);g.add(tom);
+      /* frilly lettuce poking out wide */
+      g.add(makeLettuce(0.6,LETT,1.42));
+      /* sesame-seed crown */
+      var tb=lathe([[0,0],[RTC,0],[RTC,0.05],[RTC*0.985,HC*0.3],[RTC*0.9,HC*0.58],[RTC*0.66,HC*0.82],[RTC*0.36,HC*0.95],[0,HC]],M.bun,96);
+      tb.position.y=1.46;g.add(tb);
+      var seedG=new THREE.SphereGeometry(0.05,8,6),up=new THREE.Vector3(0,1,0);
+      for(var k=0;k<40;k++){var ka=Math.random()*7,u2=Math.pow(Math.random(),0.7)*0.84,rr2=RTC*u2,sy=HC*Math.sqrt(Math.max(0,1-u2*u2)),seed=new THREE.Mesh(seedG,M.sesame);
+        seed.position.set(Math.cos(ka)*rr2,1.46+sy,Math.sin(ka)*rr2);seed.scale.set(1.6,0.5,1.0);
+        seed.quaternion.setFromUnitVectors(up,new THREE.Vector3(Math.cos(ka)*u2/RTC,Math.sqrt(Math.max(0.001,1-u2*u2))/HC,Math.sin(ka)*u2/RTC).normalize());
+        seed.rotateY(Math.random()*7);seed.castShadow=true;g.add(seed);}
+      return g;
+    }
+
+    /* Falling sesame-seed rain (above) + cheese drops (below), in scene space so they fall straight while the burger spins. */
+    function buildChickenFX(burger){
+      var bb=new THREE.Box3().setFromObject(burger),
+          topY=bb.max.y,botY=bb.min.y,halfX=(bb.max.x-bb.min.x)*0.5,
+          grp=new THREE.Group(),sauceMat=burger.userData.sauceMat;
+      var seedGeo=new THREE.SphereGeometry(0.045,6,5),seeds=[];
+      function resetSeed(sd,init){
+        sd.position.set((Math.random()*2-1)*halfX*0.66,topY+0.12+Math.random()*1.25,(Math.random()*2-1)*halfX*0.34);
+        if(init)sd.position.y=topY-0.2+Math.random()*1.6;
+        sd.userData.vy=0.55+Math.random()*0.5;sd.userData.rx=(Math.random()*2-1)*3;
+        sd.rotation.set(Math.random()*6,Math.random()*6,Math.random()*6);
+      }
+      for(var i=0;i<24;i++){var sd=new THREE.Mesh(seedGeo,M.sesame);sd.scale.set(1.7,0.55,1.0);resetSeed(sd,true);grp.add(sd);seeds.push(sd);}
+      var dropGeo=new THREE.SphereGeometry(0.075,10,8),drops=[];
+      function resetDrop(dp){dp.position.set((Math.random()*2-1)*halfX*0.5,botY+0.1+Math.random()*0.35,(Math.random()*2-1)*halfX*0.34);dp.userData.vy=0.15+Math.random()*0.25;dp.scale.set(1,1,1);}
+      for(var j=0;j<5;j++){var dp=new THREE.Mesh(dropGeo,sauceMat);resetDrop(dp);grp.add(dp);drops.push(dp);}
+      function update(dt){
+        var ii,s2,d2;
+        for(ii=0;ii<seeds.length;ii++){s2=seeds[ii];s2.position.y-=s2.userData.vy*dt;s2.rotation.x+=s2.userData.rx*dt;s2.rotation.z+=s2.userData.rx*0.5*dt;if(s2.position.y<topY-0.25)resetSeed(s2,false);}
+        for(ii=0;ii<drops.length;ii++){d2=drops[ii];d2.userData.vy+=1.1*dt;d2.position.y-=d2.userData.vy*dt;d2.scale.y=Math.min(2.4,d2.scale.y+dt*1.6);if(d2.position.y<botY-1.0)resetDrop(d2);}
+      }
+      return {group:grp,update:update};
+    }
+
+    function prep(obj,targetSize){var box=new THREE.Box3().setFromObject(obj),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3()),maxDim=Math.max(size.x,size.y,size.z)||1,s=targetSize/maxDim;obj.scale.setScalar(s);obj.position.sub(center.multiplyScalar(s));return obj;}
+
+    var pivot=new THREE.Group(); scene.add(pivot);
+    var isHero=stage.id==='heroScene';
+    var burger=null, fxUpdate=null, mixer=null;
+    if(stage.id==='sigScene'){               /* Signature Smash Stack — reference-matched chicken model */
+      burger=buildSmashChicken(); prep(burger,fit*0.98); pivot.add(burger);
+      var fx=buildChickenFX(burger); fxUpdate=fx.update; scene.add(fx.group);
+      stage.classList.add('is-3d');
+    }else if(isHero && GLTFLoader){          /* hero — supplied photoreal GLB showcase model */
+      new GLTFLoader().load('assets/models/burger.glb', function(gltf){
+        var model=gltf.scene;
+        model.traverse(function(n){ if(n.isMesh){ n.castShadow=true; n.receiveShadow=true; var mm=n.material; if(mm){ (Array.isArray(mm)?mm:[mm]).forEach(function(mat){ mat.envMapIntensity=0.6; if(mat.map)mat.map.anisotropy=8; }); } } });
+        prep(model,fit*0.95); pivot.add(model); burger=model;
+        if(gltf.animations && gltf.animations.length){ mixer=new THREE.AnimationMixer(model); mixer.clipAction(gltf.animations[0]).play(); }
+        stage.classList.add('is-3d');
+      }, undefined, function(err){
+        console.error('GLB hero load failed — using procedural fallback',err);
+        burger=buildBurger(); prep(burger,fit*0.98); pivot.add(burger); stage.classList.add('is-3d');
+      });
+    }else{                                    /* fallback — procedural smash burger */
+      burger=buildBurger(); prep(burger,fit*0.98); pivot.add(burger); stage.classList.add('is-3d');
+    }
+
+    /* drag to spin + tilt */
+    var tRotY=0.5,tRotX=0,cRotY=0.5,cRotX=0,vel=0,dragging=false,lx=0,ly=0;
+    var el=renderer.domElement; el.style.cursor='grab'; el.style.touchAction='pan-y';
+    function dn(e){dragging=true;el.style.cursor='grabbing';var t=e.touches?e.touches[0]:e;lx=t.clientX;ly=t.clientY;}
+    function mv(e){if(!dragging)return;var t=e.touches?e.touches[0]:e,dx=t.clientX-lx,dy=t.clientY-ly;tRotY+=dx*0.01;tRotX=Math.max(-0.6,Math.min(0.6,tRotX+dy*0.006));vel=dx*0.01;lx=t.clientX;ly=t.clientY;}
+    function up(){dragging=false;el.style.cursor='grab';}
+    el.addEventListener('mousedown',dn);window.addEventListener('mousemove',mv);window.addEventListener('mouseup',up);
+    el.addEventListener('touchstart',dn,{passive:true});window.addEventListener('touchmove',mv,{passive:true});window.addEventListener('touchend',up);
+
+    var visible=true;
+    new IntersectionObserver(function(e){visible=e[0].isIntersecting;},{threshold:0}).observe(stage);
+    window.addEventListener('resize',function(){var w=stage.clientWidth,h=stage.clientHeight;if(w&&h){renderer.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();}});
+
+    var sInf=0, pX=0,pY=0,tpX=0,tpY=0;
+    if(isHero){
+      window.addEventListener('scroll',function(){ sInf=window.scrollY*0.0012; },{passive:true});
+      window.addEventListener('pointermove',function(e){ if(e.pointerType&&e.pointerType!=='mouse')return; tpX=(e.clientX/innerWidth-0.5)*2; tpY=(e.clientY/innerHeight-0.5)*2; },{passive:true});
+    }
+    var clock=new THREE.Clock();
+    var baseCamX=cam.position.x, baseCamY=cam.position.y;
+    (function tick(){
+      requestAnimationFrame(tick);
+      if(!visible)return;
+      var dt=clock.getDelta(), et=clock.elapsedTime;
+      if(mixer)mixer.update(dt);
+      /* signature keeps its gentle turntable; the HERO never auto-rotates — premium product showcase */
+      if(!dragging){ if(!isHero) tRotY+=0.25*dt; tRotY+=vel; vel*=0.92; }
+      cRotY+=(tRotY-cRotY)*0.08; cRotX+=(tRotX-cRotX)*0.08;
+      if(isHero){
+        pX+=(tpX-pX)*0.05; pY+=(tpY-pY)*0.05;
+        /* no constant spin — soft idle sway + pointer/scroll parallax tilt + gentle float */
+        pivot.rotation.y=cRotY+Math.sin(et*0.45)*0.045+pX*0.17+sInf*0.5;
+        pivot.rotation.x=cRotX+Math.sin(et*0.6)*0.02+pY*0.07;
+        pivot.position.y=Math.sin(et*0.8)*0.04;
+        cam.position.x=baseCamX+pX*0.2;
+        cam.position.y=baseCamY+Math.sin(et*0.5)*0.05-pY*0.12;
+        cam.lookAt(0,-0.06,0);
+      }else{
+        pivot.rotation.y=cRotY+sInf; pivot.rotation.x=cRotX;
+        pivot.position.y=Math.sin(et*1.1)*0.05;
+      }
+      if(fxUpdate)fxUpdate(dt);
+      renderer.render(scene,cam);
+    })();
+  }
+})();
+</script>
+
+</body>
+</html>
