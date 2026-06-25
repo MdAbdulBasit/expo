@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'">
+<meta name="robots" content="noindex">
+<title>Harlem House — Manager Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0c0b09;--surface:#171511;--surface-2:#1f1c16;--cream:#f6f1e6;--muted:#b9b09c;--gold:#f2b705;--line:rgba(246,241,230,.12)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:radial-gradient(60% 60% at 50% 22%,rgba(242,183,5,.12),transparent 60%),var(--bg);color:var(--cream);font-family:'Space Grotesk',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{width:min(410px,100%);background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 30px 80px -30px rgba(0,0,0,.85)}
+  .brand{font-family:'Anton',sans-serif;font-size:2rem;text-transform:uppercase;text-align:center}.brand b{color:var(--gold)}
+  .sub{text-align:center;color:var(--muted);font-size:.86rem;margin:4px 0 22px;letter-spacing:.04em}
+  label{display:block;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  input{width:100%;background:var(--surface-2);border:1.5px solid var(--line);border-radius:11px;color:var(--cream);font:inherit;font-size:16px;padding:12px 14px;margin-bottom:14px}
+  input:focus{outline:none;border-color:var(--gold)}
+  button{width:100%;background:linear-gradient(135deg,var(--gold),#e3a904);color:#1a1305;border:none;border-radius:11px;padding:14px;font-weight:700;font-size:15px;cursor:pointer}
+  .err{color:#ff9b9b;font-size:.84rem;min-height:18px;margin-bottom:8px;text-align:center}
+  .demo{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px;font-size:.74rem;color:var(--muted);line-height:1.6}
+  .demo b{color:var(--gold)}
+  .demo button{width:auto;background:var(--surface-2);color:var(--cream);border:1px solid var(--line);font-size:.72rem;font-weight:600;padding:5px 9px;border-radius:7px;margin:3px 4px 0 0;display:inline-block}
+  .lock{font-size:.72rem;color:var(--muted);text-align:center;margin-top:14px}
+</style>
+</head>
+<body>
+  <form class="card" id="f" autocomplete="on">
+    <div class="brand">HARLEM<b>HOUSE</b></div>
+    <div class="sub">Manager &amp; Owner Dashboard</div>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username" placeholder="you@harlemhouse.co.uk">
+    <label for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="••••••••••">
+    <div class="err" id="e"></div>
+    <button type="submit" id="go">Sign in</button>
+    <div class="demo">
+      <b>Demo accounts</b> (tap to fill):<br>
+      <button type="button" data-e="owner@harlemhouse.co.uk" data-p="Harlem#2026">Owner</button>
+      <button type="button" data-e="senior@harlemhouse.co.uk" data-p="Senior#2026">Senior Manager</button>
+      <button type="button" data-e="infirmary@harlemhouse.co.uk" data-p="Store#2026">Store Manager</button>
+      <button type="button" data-e="analyst@harlemhouse.co.uk" data-p="Analyst#2026">Analyst</button>
+    </div>
+    <div class="lock">🔒 Sessions use HttpOnly cookies · CSRF-protected · auto-expire</div>
+  </form>
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s);};
+  document.querySelectorAll('.demo button').forEach(function(b){b.addEventListener('click',function(){$('#email').value=b.dataset.e;$('#pw').value=b.dataset.p;});});
+  $('#f').addEventListener('submit',function(ev){
+    ev.preventDefault();
+    $('#e').textContent=''; $('#go').disabled=true;
+    fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('#email').value.trim(),password:$('#pw').value})})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        $('#go').disabled=false;
+        if(!j.ok){$('#e').textContent=j.error||'Login failed.';return;}
+        location.href='/dashboard';
+      })
+      .catch(function(){$('#go').disabled=false;$('#e').textContent='Network error.';});
+  });
+})();
+</script>
+</body>
+</html>

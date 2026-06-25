@@ -1,0 +1,476 @@
+{
+  "managers": [
+    {
+      "id": "m_owner",
+      "name": "Head Office Owner",
+      "email": "owner@harlemhouse.co.uk",
+      "role": "owner",
+      "storeId": null,
+      "salt": "f0f34ae2d495f2618a0aedbaaba2d526",
+      "hash": "27e3088c0fe8e547f5ef7bea0c18ccee913cc5bc5657d5ddfc1510421c97b637",
+      "active": true,
+      "createdAt": "2026-06-21T17:25:35.437Z",
+      "lastLogin": "2026-06-25T18:34:43.056Z"
+    },
+    {
+      "id": "m_senior",
+      "name": "Senior Manager",
+      "email": "senior@harlemhouse.co.uk",
+      "role": "senior_manager",
+      "storeId": null,
+      "salt": "798ca17152b83cec5a9a04beaa1d52c3",
+      "hash": "3392921dc370264dcb84f9821dd8777e7261a559c8233b2c391ae8830d72e9e4",
+      "active": true,
+      "createdAt": "2026-06-21T17:25:35.472Z",
+      "lastLogin": "2026-06-21T17:49:12.020Z"
+    },
+    {
+      "id": "m_store",
+      "name": "Infirmary Store Manager",
+      "email": "infirmary@harlemhouse.co.uk",
+      "role": "store_manager",
+      "storeId": "infirmary",
+      "salt": "0dcfb99d2caa23af6781c67567f07d74",
+      "hash": "35e8d52be4b0e3936f2a3e935389b14bbd7e8929126da374b734ab97207c353b",
+      "active": true,
+      "createdAt": "2026-06-21T17:25:35.503Z",
+      "lastLogin": "2026-06-21T17:49:14.642Z"
+    },
+    {
+      "id": "m_analyst",
+      "name": "Data Analyst",
+      "email": "analyst@harlemhouse.co.uk",
+      "role": "read_only_analyst",
+      "storeId": null,
+      "salt": "79736cdc80829da7cb06017b01f5a460",
+      "hash": "9c1488014ed4c6071059de9186fe884abd7d226fa3009ad44ae348c0d94ea30a",
+      "active": true,
+      "createdAt": "2026-06-21T17:25:35.534Z",
+      "lastLogin": "2026-06-21T17:49:01.682Z"
+    }
+  ],
+  "audit": [
+    {
+      "at": "2026-06-25T18:34:43.056Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-24T19:13:43.094Z",
+      "action": "view_receipt",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ref": "HH-22423",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-24T19:13:36.350Z",
+      "action": "view_customers",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "store": "all",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-24T19:13:22.787Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T18:07:55.125Z",
+      "action": "logout",
+      "managerId": "m_senior",
+      "name": "Senior Manager",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:52:28.843Z",
+      "action": "view_customers",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "store": "all",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:51:57.668Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:51:48.094Z",
+      "action": "login_failed",
+      "email": "",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:51:41.835Z",
+      "action": "logout",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:50:58.789Z",
+      "action": "view_customers",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "store": "all",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:50:35.128Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:50:31.715Z",
+      "action": "logout",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:47.797Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:46.063Z",
+      "action": "logout",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:40.089Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:38.626Z",
+      "action": "logout",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:16.622Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:15.644Z",
+      "action": "logout",
+      "managerId": "m_store",
+      "name": "Infirmary Store Manager",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:14.642Z",
+      "action": "login",
+      "managerId": "m_store",
+      "name": "Infirmary Store Manager",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:13.448Z",
+      "action": "logout",
+      "managerId": "m_senior",
+      "name": "Senior Manager",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:12.020Z",
+      "action": "login",
+      "managerId": "m_senior",
+      "name": "Senior Manager",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:10.817Z",
+      "action": "logout",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:04.898Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:03.613Z",
+      "action": "logout",
+      "managerId": "m_analyst",
+      "name": "Data Analyst",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:01.682Z",
+      "action": "login",
+      "managerId": "m_analyst",
+      "name": "Data Analyst",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:49:00.570Z",
+      "action": "logout",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:48:57.456Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:48:56.079Z",
+      "action": "logout",
+      "managerId": "m_analyst",
+      "name": "Data Analyst",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:48:51.362Z",
+      "action": "login",
+      "managerId": "m_analyst",
+      "name": "Data Analyst",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:48:49.629Z",
+      "action": "logout",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:45:17.052Z",
+      "action": "view_customers",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "store": "all",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:45:16.262Z",
+      "action": "view_customers",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "store": "all",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:45:15.992Z",
+      "action": "view_customers",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "store": "all",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:44:33.000Z",
+      "action": "view_customers",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "store": "all",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:43:51.341Z",
+      "action": "view_customers",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "store": "all",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:43:36.077Z",
+      "action": "view_customers",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "store": "infirmary",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:43:11.051Z",
+      "action": "view_customers",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "store": "infirmary",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:42:10.451Z",
+      "action": "view_receipt",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ref": "HH-22456",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:41:48.301Z",
+      "action": "view_receipt",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ref": "HH-22456",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:40:46.572Z",
+      "action": "view_receipt",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ref": "HH-22450",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:40:43.910Z",
+      "action": "view_receipt",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ref": "HH-22452",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:40:29.549Z",
+      "action": "view_receipt",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ref": "HH-22456",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:40:14.078Z",
+      "action": "view_receipt",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ref": "HH-22456",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:39:53.564Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:39:52.174Z",
+      "action": "logout",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:39:30.501Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:34:24.821Z",
+      "action": "login",
+      "managerId": "m_senior",
+      "name": "Senior Manager",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:34:03.823Z",
+      "action": "logout",
+      "managerId": "m_analyst",
+      "name": "Data Analyst",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:33:29.115Z",
+      "action": "view_customers",
+      "managerId": "m_analyst",
+      "name": "Data Analyst",
+      "store": "all",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:33:07.889Z",
+      "action": "login",
+      "managerId": "m_analyst",
+      "name": "Data Analyst",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:32:43.477Z",
+      "action": "logout",
+      "managerId": "m_store",
+      "name": "Infirmary Store Manager",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:32:24.427Z",
+      "action": "login",
+      "managerId": "m_store",
+      "name": "Infirmary Store Manager",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:29:58.850Z",
+      "action": "logout",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:27:51.802Z",
+      "action": "manager_update",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "target": "senior@harlemhouse.co.uk",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:27:40.743Z",
+      "action": "manager_update",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "target": "senior@harlemhouse.co.uk",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:27:14.842Z",
+      "action": "master_pin_failed",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    },
+    {
+      "at": "2026-06-21T17:26:19.161Z",
+      "action": "login",
+      "managerId": "m_owner",
+      "name": "Head Office Owner",
+      "ip": "::1"
+    }
+  ],
+  "master": {
+    "salt": "1218647d84494768fe64a2033f2bb577",
+    "hash": "62b6a652c6a2608aa44fbb3340fed9dbd1e076a3c79da8670af5e2b99f5bf86d"
+  }
+}

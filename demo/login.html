@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="robots" content="noindex">
+<title>Harlem House — Staff Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0c0b09;--surface:#171511;--surface-2:#1f1c16;--cream:#f6f1e6;--muted:#b9b09c;--gold:#f2b705;--line:rgba(246,241,230,.12)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:radial-gradient(60% 60% at 50% 25%,rgba(242,183,5,.12),transparent 60%),var(--bg);color:var(--cream);font-family:'Space Grotesk',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{width:min(400px,100%);background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 30px 80px -30px rgba(0,0,0,.85)}
+  .brand{font-family:'Anton',sans-serif;font-size:2rem;text-transform:uppercase;text-align:center}
+  .brand b{color:var(--gold)}
+  .sub{text-align:center;color:var(--muted);font-size:.9rem;margin:4px 0 22px}
+  label{display:block;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  input{width:100%;background:var(--surface-2);border:1.5px solid var(--line);border-radius:11px;color:var(--cream);font:inherit;font-size:16px;padding:12px 14px;margin-bottom:14px}
+  input:focus{outline:none;border-color:var(--gold)}
+  button{width:100%;background:linear-gradient(135deg,var(--gold),#e3a904);color:#1a1305;border:none;border-radius:11px;padding:14px;font-weight:700;font-size:15px;cursor:pointer}
+  .err{color:#ff9b9b;font-size:.84rem;min-height:18px;margin-bottom:8px;text-align:center}
+  .demo{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px;font-size:.78rem;color:var(--muted);line-height:1.6}
+  .demo b{color:var(--gold)}
+  .demo .grp{margin-top:9px}
+  .demo .st{display:block;font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cream);margin-bottom:4px}
+  .demo button{width:auto;background:var(--surface-2);color:var(--cream);border:1px solid var(--line);font-size:.74rem;font-weight:600;padding:5px 10px;border-radius:7px;margin:2px 5px 2px 0}
+  .demo button:hover{border-color:var(--gold);color:var(--gold)}
+</style>
+</head>
+<body>
+  <form class="card" id="f" autocomplete="off">
+    <div class="brand">HARLEM<b>HOUSE</b></div>
+    <div class="sub">Staff portal — sign in</div>
+    <label for="u">Username</label>
+    <input id="u" autocapitalize="none" spellcheck="false" placeholder="e.g. ahmed">
+    <label for="p">PIN</label>
+    <input id="p" type="password" inputmode="numeric" placeholder="••••">
+    <div class="err" id="e"></div>
+    <button type="submit">Sign in</button>
+    <div class="demo">
+      <b>Demo accounts</b> (tap to fill):
+      <div class="grp"><span class="st">St Mary's Road (Store 1)</span>
+        <button type="button" data-u="ahmed" data-p="1111">ahmed / 1111</button>
+        <button type="button" data-u="mohammed" data-p="1112">mohammed / 1112</button>
+      </div>
+      <div class="grp"><span class="st">Infirmary Road (Store 2)</span>
+        <button type="button" data-u="omar" data-p="2221">omar / 2221</button>
+        <button type="button" data-u="ibrahim" data-p="2222">ibrahim / 2222</button>
+      </div>
+      <div class="grp"><span class="st">Owner · master (both stores)</span>
+        <button type="button" data-u="owner" data-p="1234">owner / 1234</button>
+      </div>
+    </div>
+  </form>
+<script>
+(function(){
+  var DEST={owner:'/owner',vendor:'/vendor',delivery:'/delivery'};
+  // already logged in? bounce to the right portal
+  try{ var tok=sessionStorage.getItem('hh-staff-token'); var role=sessionStorage.getItem('hh-staff-role');
+    if(tok&&DEST[role]) location.replace(DEST[role]); }catch(e){}
+  document.querySelectorAll('.demo button').forEach(function(b){b.addEventListener('click',function(){document.getElementById('u').value=b.dataset.u;document.getElementById('p').value=b.dataset.p;});});
+  document.getElementById('f').addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var u=document.getElementById('u').value.trim(), p=document.getElementById('p').value.trim();
+    document.getElementById('e').textContent='';
+    fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,pin:p})})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j.ok){document.getElementById('e').textContent=j.error||'Login failed.';return;}
+        try{ sessionStorage.setItem('hh-staff-token',j.token); sessionStorage.setItem('hh-staff-role',j.user.role); sessionStorage.setItem('hh-staff-name',j.user.name); sessionStorage.setItem('hh-staff-store',j.user.store||''); }catch(e){}
+        location.replace(DEST[j.user.role]||'/login');
+      })
+      .catch(function(){document.getElementById('e').textContent='Network error.';});
+  });
+})();
+</script>
+</body>
+</html>

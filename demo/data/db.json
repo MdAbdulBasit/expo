@@ -1,0 +1,744 @@
+{
+  "version": 2,
+  "users": [
+    {
+      "id": "u_owner",
+      "name": "Harlem House — Owner",
+      "username": "owner",
+      "role": "owner",
+      "store": null,
+      "salt": "2ea7f153b3f49fe5aef26eeb538f6109",
+      "hash": "44c50b90213a355fd2d74dce16bcf95fe8e378dd998cec21e40430ce9f83acbe",
+      "active": true,
+      "createdAt": "2026-06-25T13:43:17.583Z"
+    },
+    {
+      "id": "u_stm_v1",
+      "name": "Ahmed",
+      "username": "ahmed",
+      "role": "vendor",
+      "store": "stmarys",
+      "salt": "7188ee20bf013d207478846635f86afa",
+      "hash": "698a5751907d6634b9d6b5221f5021b38ffa1942d4ccea877306763d6cd1b7ca",
+      "active": true,
+      "createdAt": "2026-06-25T13:43:17.607Z"
+    },
+    {
+      "id": "u_stm_v2",
+      "name": "Mohammed",
+      "username": "mohammed",
+      "role": "vendor",
+      "store": "stmarys",
+      "salt": "da0806cf73047024e1a5dcc28eb523ae",
+      "hash": "0eb9bc652061074a1b49aa90c71a326b165c263f0b55f0e01c8a5e57b1eb1050",
+      "active": true,
+      "createdAt": "2026-06-25T13:43:17.630Z"
+    },
+    {
+      "id": "u_stm_d1",
+      "name": "Baran",
+      "username": "baran",
+      "role": "delivery",
+      "store": "stmarys",
+      "salt": "cf8720af25d16da919640790ca3bff11",
+      "hash": "71e2f5f63531e8c0581683cb03593d262cb84a36e1d498b100a2daf85f6d0c89",
+      "active": true,
+      "createdAt": "2026-06-25T13:43:17.652Z"
+    },
+    {
+      "id": "u_stm_d2",
+      "name": "Azad",
+      "username": "azad",
+      "role": "delivery",
+      "store": "stmarys",
+      "salt": "7a91de5d97187a7d669aa2bad840c418",
+      "hash": "698f562250f4910c77dd5f97813bebc2ce9b6be5a246901b96d7060274285e29",
+      "active": true,
+      "createdAt": "2026-06-25T13:43:17.676Z"
+    },
+    {
+      "id": "u_inf_v1",
+      "name": "Omar",
+      "username": "omar",
+      "role": "vendor",
+      "store": "infirmary",
+      "salt": "8bf9479a8af156ceada813ce53d878eb",
+      "hash": "fa5f07f2deb4772011a471d320eb17c2cc464da68448831be627bef411338f29",
+      "active": true,
+      "createdAt": "2026-06-25T13:43:17.699Z"
+    },
+    {
+      "id": "u_inf_v2",
+      "name": "Ibrahim",
+      "username": "ibrahim",
+      "role": "vendor",
+      "store": "infirmary",
+      "salt": "99331d1cd255f8790e4bb781071f72c5",
+      "hash": "ccadc461b9d454e1736e99cd08d6fdad937eeffe9c76dffe6a9f628c075f3528",
+      "active": true,
+      "createdAt": "2026-06-25T13:43:17.723Z"
+    },
+    {
+      "id": "u_inf_d1",
+      "name": "Mustafa",
+      "username": "mustafa",
+      "role": "delivery",
+      "store": "infirmary",
+      "salt": "0068f4940059f9040bae9ee050d11c1a",
+      "hash": "1539f7c38c24b63745146cc419d267109dd9cf74f360ddf70ed99f8dc6257aec",
+      "active": true,
+      "createdAt": "2026-06-25T13:43:17.746Z"
+    },
+    {
+      "id": "u_inf_d2",
+      "name": "Kawa",
+      "username": "kawa",
+      "role": "delivery",
+      "store": "infirmary",
+      "salt": "f00ce64b00608e28e6ad4c31a5219e3b",
+      "hash": "cce5549eecf6188a652a75ae0b0ac09884c890f3fb5ea66c7c49ee34f77ba159",
+      "active": true,
+      "createdAt": "2026-06-25T13:43:17.769Z"
+    }
+  ],
+  "orders": [
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1001",
+      "ref": "HH-1001",
+      "placedAt": "2026-06-25T13:40:17.770Z",
+      "mode": "Collection",
+      "name": "Sarah K.",
+      "phone": "07811240661",
+      "items": [
+        {
+          "id": "smash:1",
+          "name": "El Classico 2.0",
+          "price": 9.49,
+          "qty": 2,
+          "lineTotal": 18.98
+        },
+        {
+          "id": "fries:0",
+          "name": "Loaded Fries — Cheesesteak Original",
+          "price": 8.99,
+          "qty": 1,
+          "lineTotal": 8.99
+        }
+      ],
+      "subtotal": 27.97,
+      "currency": "GBP",
+      "branch": "St Mary's Road",
+      "store": "stmarys",
+      "status": "READY",
+      "paid": false,
+      "payment": null,
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T13:40:17.770Z",
+          "by": "seed"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-25T14:34:26.824Z",
+          "by": "Ahmed (vendor)"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-25T18:24:46.894Z",
+          "by": "Mohammed (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-25T18:24:47.535Z",
+          "by": "Mohammed (vendor)"
+        }
+      ],
+      "eta": "15–20 min",
+      "callback": false
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1002",
+      "ref": "HH-1002",
+      "placedAt": "2026-06-25T13:34:17.770Z",
+      "mode": "Delivery",
+      "name": "Yusuf A.",
+      "phone": "07700118245",
+      "items": [
+        {
+          "id": "steaks:0",
+          "name": "Philly Cheesesteak",
+          "price": 9.99,
+          "qty": 1,
+          "lineTotal": 9.99
+        },
+        {
+          "id": "shakes:1",
+          "name": "Biscoff Shake",
+          "price": 5.49,
+          "qty": 1,
+          "lineTotal": 5.49
+        }
+      ],
+      "subtotal": 15.48,
+      "currency": "GBP",
+      "branch": "St Mary's Road",
+      "store": "stmarys",
+      "status": "READY",
+      "paid": true,
+      "payment": null,
+      "driverId": "u_stm_d1",
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T13:34:17.770Z",
+          "by": "seed"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-25T14:34:52.014Z",
+          "by": "Ahmed (vendor)"
+        }
+      ],
+      "address": "12 Sharrow Lane",
+      "postcode": "S11 8AB",
+      "eta": "20–30 min"
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1003",
+      "ref": "HH-1003",
+      "placedAt": "2026-06-25T13:28:17.770Z",
+      "mode": "Collection",
+      "name": "Leah M.",
+      "phone": "07533902117",
+      "items": [
+        {
+          "id": "smash:2",
+          "name": "Uptown Smash",
+          "price": 10.49,
+          "qty": 1,
+          "lineTotal": 10.49
+        }
+      ],
+      "subtotal": 10.49,
+      "currency": "GBP",
+      "branch": "St Mary's Road",
+      "store": "stmarys",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": null,
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T13:28:17.770Z",
+          "by": "seed"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-25T14:34:50.375Z",
+          "by": "Ahmed (vendor)"
+        }
+      ],
+      "eta": "15–20 min",
+      "callback": false,
+      "completedAt": "2026-06-25T14:34:50.375Z"
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1004",
+      "ref": "HH-1004",
+      "placedAt": "2026-06-25T13:21:17.770Z",
+      "mode": "Delivery",
+      "name": "Imran S.",
+      "phone": "07458661203",
+      "items": [
+        {
+          "id": "smash:3",
+          "name": "Mac N' Smash",
+          "price": 10.99,
+          "qty": 3,
+          "lineTotal": 32.97
+        }
+      ],
+      "subtotal": 32.97,
+      "currency": "GBP",
+      "branch": "St Mary's Road",
+      "store": "stmarys",
+      "status": "OUT_FOR_DELIVERY",
+      "paid": true,
+      "payment": null,
+      "driverId": "u_stm_d2",
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T13:21:17.770Z",
+          "by": "seed"
+        }
+      ],
+      "address": "4 Ecclesall Road",
+      "postcode": "S11 8PG",
+      "eta": "20–30 min"
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1005",
+      "ref": "HH-1005",
+      "placedAt": "2026-06-25T13:05:17.770Z",
+      "mode": "Collection",
+      "name": "Aisha R.",
+      "phone": "07900112233",
+      "items": [
+        {
+          "id": "chicken:3",
+          "name": "Chicken & Waffle",
+          "price": 9.99,
+          "qty": 1,
+          "lineTotal": 9.99
+        },
+        {
+          "id": "shakes:0",
+          "name": "Harlem Shake 568ml",
+          "price": 4.99,
+          "qty": 1,
+          "lineTotal": 4.99
+        }
+      ],
+      "subtotal": 14.98,
+      "currency": "GBP",
+      "branch": "St Mary's Road",
+      "store": "stmarys",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": null,
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T13:05:17.770Z",
+          "by": "seed"
+        }
+      ],
+      "completedAt": "2026-06-25T13:25:17.770Z",
+      "eta": "15–20 min",
+      "callback": false
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1006",
+      "ref": "HH-1006",
+      "placedAt": "2026-06-25T12:48:17.770Z",
+      "mode": "Delivery",
+      "name": "Daniel P.",
+      "phone": "07901445566",
+      "items": [
+        {
+          "id": "steaks:0",
+          "name": "Philly Cheesesteak",
+          "price": 9.99,
+          "qty": 2,
+          "lineTotal": 19.98
+        },
+        {
+          "id": "smash:1",
+          "name": "El Classico 2.0",
+          "price": 9.49,
+          "qty": 1,
+          "lineTotal": 9.49
+        }
+      ],
+      "subtotal": 29.47,
+      "currency": "GBP",
+      "branch": "St Mary's Road",
+      "store": "stmarys",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": null,
+      "driverId": "u_stm_d2",
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T12:48:17.770Z",
+          "by": "seed"
+        }
+      ],
+      "completedAt": "2026-06-25T13:08:17.770Z",
+      "address": "7 Hunters Bar",
+      "postcode": "S11 8TG",
+      "eta": "20–30 min"
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1007",
+      "ref": "HH-1007",
+      "placedAt": "2026-06-25T13:41:17.770Z",
+      "mode": "Collection",
+      "name": "Tom B.",
+      "phone": "07912334109",
+      "items": [
+        {
+          "id": "smash:3",
+          "name": "Mac N' Smash",
+          "price": 10.99,
+          "qty": 1,
+          "lineTotal": 10.99
+        },
+        {
+          "id": "sides:1",
+          "name": "Mozzy Sticks 3x",
+          "price": 4.49,
+          "qty": 1,
+          "lineTotal": 4.49
+        }
+      ],
+      "subtotal": 15.48,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "store": "infirmary",
+      "status": "COMPLETED",
+      "paid": false,
+      "payment": null,
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T13:41:17.770Z",
+          "by": "seed"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-25T18:22:46.903Z",
+          "by": "Ibrahim (vendor)"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-25T18:22:47.605Z",
+          "by": "Ibrahim (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-25T18:22:48.092Z",
+          "by": "Ibrahim (vendor)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-25T18:22:48.256Z",
+          "by": "Ibrahim (vendor)"
+        }
+      ],
+      "eta": "15–20 min",
+      "callback": false,
+      "completedAt": "2026-06-25T18:22:48.256Z"
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1008",
+      "ref": "HH-1008",
+      "placedAt": "2026-06-25T13:38:17.770Z",
+      "mode": "Delivery",
+      "name": "Fatima Z.",
+      "phone": "07845770612",
+      "items": [
+        {
+          "id": "chicken:0",
+          "name": "Harlem Heat",
+          "price": 9.49,
+          "qty": 2,
+          "lineTotal": 18.98
+        },
+        {
+          "id": "fries:1",
+          "name": "Loaded Fries — Cheesesteak Smoked",
+          "price": 9.49,
+          "qty": 1,
+          "lineTotal": 9.49
+        }
+      ],
+      "subtotal": 28.47,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "store": "infirmary",
+      "status": "READY",
+      "paid": false,
+      "payment": null,
+      "driverId": "u_inf_d2",
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T13:38:17.770Z",
+          "by": "seed"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-25T14:35:51.815Z",
+          "by": "Omar (vendor)"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-25T14:35:51.815Z",
+          "by": "auto-assign"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-25T18:22:46.260Z",
+          "by": "Ibrahim (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-25T18:22:49.036Z",
+          "by": "Ibrahim (vendor)"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-25T18:22:51.773Z",
+          "by": "Ibrahim -> Kawa"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-25T18:37:15.600Z",
+          "by": "Omar -> Mustafa"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-25T18:37:16.651Z",
+          "by": "Omar -> Kawa"
+        }
+      ],
+      "address": "88 Firth Park Road",
+      "postcode": "S5 6HG",
+      "eta": "30–45 min"
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1009",
+      "ref": "HH-1009",
+      "placedAt": "2026-06-25T13:32:17.770Z",
+      "mode": "Collection",
+      "name": "Jack W.",
+      "phone": "07401558823",
+      "items": [
+        {
+          "id": "steaks:2",
+          "name": "Chopped Cheese",
+          "price": 9.49,
+          "qty": 1,
+          "lineTotal": 9.49
+        },
+        {
+          "id": "sides:2",
+          "name": "Fries (Reg / Lrg)",
+          "price": 2.99,
+          "qty": 1,
+          "lineTotal": 2.99
+        }
+      ],
+      "subtotal": 12.48,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "store": "infirmary",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": null,
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T13:32:17.770Z",
+          "by": "seed"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-25T14:35:53.351Z",
+          "by": "Omar (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-25T18:22:43.871Z",
+          "by": "Ibrahim (vendor)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-25T18:22:45.099Z",
+          "by": "Ibrahim (vendor)"
+        }
+      ],
+      "eta": "15–20 min",
+      "callback": false,
+      "completedAt": "2026-06-25T18:22:45.099Z"
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1010",
+      "ref": "HH-1010",
+      "placedAt": "2026-06-25T13:27:17.770Z",
+      "mode": "Collection",
+      "name": "Noah K.",
+      "phone": "07733210984",
+      "items": [
+        {
+          "id": "smash:0",
+          "name": "El Classico",
+          "price": 7.99,
+          "qty": 1,
+          "lineTotal": 7.99
+        }
+      ],
+      "subtotal": 7.99,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "store": "infirmary",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": null,
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T13:27:17.770Z",
+          "by": "seed"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-25T14:33:43.304Z",
+          "by": "Omar (vendor)"
+        }
+      ],
+      "eta": "15–20 min",
+      "callback": false,
+      "completedAt": "2026-06-25T14:33:43.303Z"
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1011",
+      "ref": "HH-1011",
+      "placedAt": "2026-06-25T12:57:17.770Z",
+      "mode": "Delivery",
+      "name": "Priya N.",
+      "phone": "07811556677",
+      "items": [
+        {
+          "id": "smash:2",
+          "name": "Uptown Smash",
+          "price": 10.49,
+          "qty": 2,
+          "lineTotal": 20.98
+        }
+      ],
+      "subtotal": 20.98,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "store": "infirmary",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": null,
+      "driverId": "u_inf_d1",
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T12:57:17.770Z",
+          "by": "seed"
+        }
+      ],
+      "completedAt": "2026-06-25T13:18:17.770Z",
+      "address": "15 Page Hall",
+      "postcode": "S4 7AB",
+      "eta": "30–45 min"
+    },
+    {
+      "schema": "hh.order/1",
+      "id": "o_seed1012",
+      "ref": "HH-1012",
+      "placedAt": "2026-06-25T12:43:17.770Z",
+      "mode": "Collection",
+      "name": "Mo F.",
+      "phone": "07822667788",
+      "items": [
+        {
+          "id": "chicken:2",
+          "name": "Double Barrel Chick",
+          "price": 10.99,
+          "qty": 1,
+          "lineTotal": 10.99
+        },
+        {
+          "id": "shakes:1",
+          "name": "Biscoff Shake",
+          "price": 5.49,
+          "qty": 1,
+          "lineTotal": 5.49
+        }
+      ],
+      "subtotal": 16.48,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "store": "infirmary",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": null,
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-25T12:43:17.770Z",
+          "by": "seed"
+        }
+      ],
+      "completedAt": "2026-06-25T13:03:17.770Z",
+      "eta": "15–20 min",
+      "callback": false
+    }
+  ],
+  "notifications": [
+    {
+      "id": "n_6f1f4d6217f9",
+      "at": "2026-06-25T18:37:16.651Z",
+      "read": false,
+      "type": "assign",
+      "store": "infirmary",
+      "ref": "HH-1008",
+      "orderId": "o_seed1008",
+      "driverId": "u_inf_d2",
+      "text": "Kawa assigned to HH-1008"
+    },
+    {
+      "id": "n_db40e1cfb60e",
+      "at": "2026-06-25T18:37:15.600Z",
+      "read": false,
+      "type": "assign",
+      "store": "infirmary",
+      "ref": "HH-1008",
+      "orderId": "o_seed1008",
+      "driverId": "u_inf_d1",
+      "text": "Mustafa assigned to HH-1008"
+    },
+    {
+      "id": "n_0a17a9514bd3",
+      "at": "2026-06-25T18:22:51.774Z",
+      "read": false,
+      "type": "assign",
+      "store": "infirmary",
+      "ref": "HH-1008",
+      "orderId": "o_seed1008",
+      "driverId": "u_inf_d2",
+      "text": "Kawa assigned to HH-1008"
+    },
+    {
+      "id": "n_71c280a7854a",
+      "at": "2026-06-25T14:35:51.815Z",
+      "read": false,
+      "type": "assign",
+      "store": "infirmary",
+      "ref": "HH-1008",
+      "orderId": "o_seed1008",
+      "driverId": "u_inf_d1",
+      "text": "Driver auto-assigned to HH-1008"
+    }
+  ],
+  "counters": {
+    "order": 1100
+  }
+}

@@ -1,0 +1,11 @@
+===================================================
+ HARLEM HOUSE — Manager Dashboard  http://localhost:4500
+   Login            : http://localhost:4500/login
+   Data source      : pos-source.cjs (Presto seam, demo data, 2 stores)
+   Secure cookies   : off (set HH_SECURE_COOKIE=1 behind TLS)
+   Demo logins:
+     owner@harlemhouse.co.uk     / Harlem#2026   (Owner — full access)
+     senior@harlemhouse.co.uk    / Senior#2026   (Senior Manager)
+     infirmary@harlemhouse.co.uk / Store#2026    (Store Manager — Infirmary only)
+     analyst@harlemhouse.co.uk   / Analyst#2026  (Read-Only Analyst — PII masked)
+===================================================

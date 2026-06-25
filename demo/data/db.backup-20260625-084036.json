@@ -1,0 +1,1106 @@
+{
+  "version": 1,
+  "users": [
+    {
+      "id": "u_owner",
+      "name": "Owner (Manager)",
+      "username": "owner",
+      "role": "owner",
+      "salt": "94aaf9512b1c8a7f8737843ed28a5fdb",
+      "hash": "e204c19eef348c48063feb6d9d2b9c502d55bd75b66e59b662dddbbff10c450f",
+      "active": true,
+      "createdAt": "2026-06-20T17:18:53.975Z"
+    },
+    {
+      "id": "u_cashier",
+      "name": "Front Counter",
+      "username": "cashier",
+      "role": "vendor",
+      "salt": "7e7090eac3f6b78f8f92f1bc33d0f614",
+      "hash": "1d02d472435cf4a37efb7dbd97f3884774250c6667de6035655e8bf3393deb92",
+      "active": true,
+      "createdAt": "2026-06-20T17:18:54.001Z"
+    },
+    {
+      "id": "u_driver1",
+      "name": "Driver — Sam",
+      "username": "driver1",
+      "role": "delivery",
+      "salt": "5dc11b831d1a2dd1d060ce3d6db08f9b",
+      "hash": "e81e83e8e9137f1575de288841c4e650c8fec0a27cd1b18ee527df20a2212c93",
+      "active": true,
+      "createdAt": "2026-06-20T17:18:54.025Z"
+    },
+    {
+      "id": "u_a3d3ea97e2",
+      "name": "anas ullah",
+      "username": "anas",
+      "role": "owner",
+      "salt": "37cbfbe8727efa6518569bdb09c79cb7",
+      "hash": "de6be3482f1b720046e31676841ee8ebb76a953ef5c0f499c98cafec8b5d5b19",
+      "active": true,
+      "createdAt": "2026-06-20T17:23:37.750Z"
+    },
+    {
+      "id": "u_42d3fab25a",
+      "name": "FFAVA",
+      "username": "driver2",
+      "role": "delivery",
+      "salt": "8fe49a6dc27a341f7488689a61c1d818",
+      "hash": "b10adbdd7160e18ab89271c34fe89fb5a0231d2ce84b8f81869c158475c8eaca",
+      "active": true,
+      "createdAt": "2026-06-24T19:26:46.660Z"
+    }
+  ],
+  "orders": [
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1012",
+      "placedAt": "2026-06-24T19:56:28.835Z",
+      "mode": "Collection",
+      "name": "qweqq",
+      "phone": "07459275569",
+      "items": [
+        {
+          "id": "fries:2",
+          "name": "Loaded Fries — Chopped Cheese",
+          "price": 8.49,
+          "qty": 3,
+          "lineTotal": 25.47
+        }
+      ],
+      "subtotal": 25.47,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "callback": true,
+      "eta": "15–20 min",
+      "id": "o_472fea1e9ff298b1",
+      "status": "PENDING",
+      "paid": false,
+      "payment": null,
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-24T19:56:28.835Z",
+          "by": "customer"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1011",
+      "placedAt": "2026-06-24T19:55:29.907Z",
+      "mode": "Collection",
+      "name": "ssasdfas",
+      "phone": "07459275569",
+      "items": [
+        {
+          "id": "chicken:1",
+          "name": "Sweet Harlem",
+          "price": 9.49,
+          "qty": 4,
+          "lineTotal": 37.96
+        }
+      ],
+      "subtotal": 37.96,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "callback": true,
+      "eta": "15–20 min",
+      "id": "o_ca5b9052f6821be8",
+      "status": "COMPLETED",
+      "paid": false,
+      "payment": null,
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-24T19:55:29.907Z",
+          "by": "customer"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-24T19:55:45.383Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-24T19:55:45.750Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-24T19:55:46.235Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-24T19:55:48.273Z",
+          "by": "Front Counter (vendor)"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1010",
+      "placedAt": "2026-06-24T19:23:21.179Z",
+      "mode": "Delivery",
+      "name": "asds",
+      "phone": "07459275569",
+      "items": [
+        {
+          "id": "fries:4",
+          "name": "Loaded Fries — Chopped Chick Sweet",
+          "price": 8.49,
+          "qty": 11,
+          "lineTotal": 93.39
+        }
+      ],
+      "subtotal": 93.39,
+      "currency": "GBP",
+      "address": "32432fwfaewgaergerys",
+      "postcode": "S3 7SF",
+      "eta": "20–30 min",
+      "id": "o_948604fd03f169c7",
+      "status": "COMPLETED",
+      "paid": false,
+      "payment": null,
+      "driverId": "u_42d3fab25a",
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-24T19:23:21.179Z",
+          "by": "customer"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-24T19:23:29.060Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-24T19:23:29.060Z",
+          "by": "auto-assign"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-24T19:23:58.812Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-24T19:24:03.920Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-24T19:27:08.242Z",
+          "by": "Front Counter -> FFAVA"
+        },
+        {
+          "to": "OUT_FOR_DELIVERY",
+          "at": "2026-06-24T19:27:18.940Z",
+          "by": "FFAVA (delivery)"
+        },
+        {
+          "to": "DELIVERED",
+          "at": "2026-06-24T19:27:19.990Z",
+          "by": "FFAVA (delivery)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-24T19:27:20.498Z",
+          "by": "FFAVA (delivery)"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1009",
+      "placedAt": "2026-06-20T17:49:09.235Z",
+      "mode": "Delivery",
+      "name": "Abdul",
+      "phone": "+446281315272",
+      "items": [
+        {
+          "id": "sides:2",
+          "name": "Fries (Reg / Lrg)",
+          "price": 2.99,
+          "qty": 9,
+          "lineTotal": 26.91
+        }
+      ],
+      "subtotal": 26.91,
+      "currency": "GBP",
+      "address": "80 Hoyle St, Sheffield S3 7LG, United Kingdom",
+      "postcode": "S3 7LG",
+      "eta": "20–30 min",
+      "id": "o_98beae2907648d95",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": {
+        "provider": "demo",
+        "intentId": "pi_demo_71fb9983a325ec81",
+        "amount": 2691,
+        "currency": "gbp",
+        "status": "succeeded",
+        "last4": "4242",
+        "paidAt": "2026-06-20T17:49:10.312Z"
+      },
+      "driverId": "u_42d3fab25a",
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-20T17:49:09.235Z",
+          "by": "customer"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-20T17:49:15.378Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-20T17:49:15.378Z",
+          "by": "auto-assign"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-20T17:49:16.126Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-20T17:49:16.979Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-24T19:51:39.846Z",
+          "by": "Front Counter -> FFAVA"
+        },
+        {
+          "to": "OUT_FOR_DELIVERY",
+          "at": "2026-06-24T19:51:42.275Z",
+          "by": "FFAVA (delivery)"
+        },
+        {
+          "to": "DELIVERED",
+          "at": "2026-06-24T19:51:42.619Z",
+          "by": "FFAVA (delivery)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-24T19:51:43.028Z",
+          "by": "FFAVA (delivery)"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1008",
+      "placedAt": "2026-06-20T17:48:55.839Z",
+      "mode": "Collection",
+      "name": "Abdul Basit",
+      "phone": "+440628131527",
+      "items": [
+        {
+          "id": "fries:5",
+          "name": "Chopped N' Mixed",
+          "price": 9.49,
+          "qty": 1,
+          "lineTotal": 9.49
+        },
+        {
+          "id": "fries:2",
+          "name": "Loaded Fries — Chopped Cheese",
+          "price": 8.49,
+          "qty": 1,
+          "lineTotal": 8.49
+        }
+      ],
+      "subtotal": 17.98,
+      "currency": "GBP",
+      "branch": "St Mary's Road",
+      "callback": true,
+      "eta": "15–20 min",
+      "id": "o_f8b320409cab96bb",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": {
+        "provider": "demo",
+        "intentId": "pi_demo_aec1a78acf271eed",
+        "amount": 1798,
+        "currency": "gbp",
+        "status": "succeeded",
+        "last4": "4242",
+        "paidAt": "2026-06-20T17:48:56.850Z"
+      },
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-20T17:48:55.839Z",
+          "by": "customer"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-20T17:49:14.864Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-20T17:49:15.761Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-20T17:49:44.692Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-20T17:49:46.319Z",
+          "by": "Front Counter (vendor)"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1007",
+      "placedAt": "2026-06-20T17:47:21.226Z",
+      "mode": "Collection",
+      "name": "Mohammed Abdul Basit",
+      "phone": "+44062813152",
+      "items": [
+        {
+          "id": "fries:5",
+          "name": "Chopped N' Mixed",
+          "price": 9.49,
+          "qty": 1,
+          "lineTotal": 9.49
+        }
+      ],
+      "subtotal": 9.49,
+      "currency": "GBP",
+      "branch": "St Mary's Road",
+      "callback": true,
+      "eta": "15–20 min",
+      "id": "o_b5cae656e20112d9",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": {
+        "provider": "demo",
+        "intentId": "pi_demo_f34d8460f5d1d36e",
+        "amount": 949,
+        "currency": "gbp",
+        "status": "succeeded",
+        "last4": "4242",
+        "paidAt": "2026-06-20T17:47:22.355Z"
+      },
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-20T17:47:21.226Z",
+          "by": "customer"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-20T17:48:24.814Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-20T17:49:12.456Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-20T17:49:45.018Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-20T17:49:46.742Z",
+          "by": "Front Counter (vendor)"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1006",
+      "placedAt": "2026-06-20T17:46:43.130Z",
+      "mode": "Collection",
+      "name": "Abdul Basit Mohammed",
+      "phone": "+447459275569",
+      "items": [
+        {
+          "id": "fries:5",
+          "name": "Chopped N' Mixed",
+          "price": 9.49,
+          "qty": 1,
+          "lineTotal": 9.49
+        }
+      ],
+      "subtotal": 9.49,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "callback": true,
+      "eta": "15–20 min",
+      "id": "o_972f5c4661c583ce",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": {
+        "provider": "demo",
+        "intentId": "pi_demo_486dfc335757b6bb",
+        "amount": 949,
+        "currency": "gbp",
+        "status": "succeeded",
+        "last4": "4242",
+        "paidAt": "2026-06-20T17:46:43.991Z"
+      },
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-20T17:46:43.130Z",
+          "by": "customer"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-20T17:46:55.098Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-20T17:49:13.008Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-20T17:49:45.437Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-20T17:50:00.436Z",
+          "by": "Front Counter (vendor)"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1005",
+      "placedAt": "2026-06-20T17:33:53.284Z",
+      "mode": "Delivery",
+      "name": "Tory",
+      "phone": "+447459275569",
+      "items": [
+        {
+          "id": "fries:5",
+          "name": "Chopped N' Mixed",
+          "price": 9.49,
+          "qty": 3,
+          "lineTotal": 28.47
+        }
+      ],
+      "subtotal": 28.47,
+      "currency": "GBP",
+      "address": "80 Hoyle St, Sheffield S3 7LG,, G - 180 - D, Student Roost S3",
+      "postcode": "S3 7LG",
+      "eta": "20–30 min",
+      "id": "o_eecb7c9429068b6d",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": {
+        "provider": "demo",
+        "intentId": "pi_demo_a6b2f4b17c3b80a4",
+        "amount": 2847,
+        "currency": "gbp",
+        "status": "succeeded",
+        "last4": "4242",
+        "paidAt": "2026-06-20T17:33:55.220Z"
+      },
+      "driverId": "u_driver1",
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-20T17:33:53.284Z",
+          "by": "customer"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-20T17:34:10.907Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-20T17:34:10.907Z",
+          "by": "auto-assign"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-20T17:34:29.476Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-20T17:34:53.406Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "OUT_FOR_DELIVERY",
+          "at": "2026-06-20T17:35:33.443Z",
+          "by": "Driver — Sam (delivery)"
+        },
+        {
+          "to": "DELIVERED",
+          "at": "2026-06-20T17:35:49.746Z",
+          "by": "Driver — Sam (delivery)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-20T17:36:38.975Z",
+          "by": "Driver — Sam (delivery)"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1004",
+      "placedAt": "2026-06-20T17:33:35.323Z",
+      "mode": "Collection",
+      "name": "anas",
+      "phone": "+447459275569",
+      "items": [
+        {
+          "id": "fries:3",
+          "name": "Loaded Fries — Chopped Chick Heat",
+          "price": 8.49,
+          "qty": 1,
+          "lineTotal": 8.49
+        }
+      ],
+      "subtotal": 8.49,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "callback": true,
+      "eta": "15–20 min",
+      "id": "o_7eb9e487c05b1e78",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": {
+        "provider": "demo",
+        "intentId": "pi_demo_448e5115c56fc3f7",
+        "amount": 849,
+        "currency": "gbp",
+        "status": "succeeded",
+        "last4": "4242",
+        "paidAt": "2026-06-20T17:33:36.318Z"
+      },
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-20T17:33:35.323Z",
+          "by": "customer"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-20T17:34:11.340Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-20T17:34:30.159Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-20T17:35:57.743Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-20T17:35:59.808Z",
+          "by": "Front Counter (vendor)"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1003",
+      "placedAt": "2026-06-20T17:33:16.924Z",
+      "mode": "Collection",
+      "name": "Abdul Basit Mohammed",
+      "phone": "+447459275569",
+      "items": [
+        {
+          "id": "fries:1",
+          "name": "Loaded Fries — Cheesesteak Smoked",
+          "price": 9.49,
+          "qty": 1,
+          "lineTotal": 9.49
+        }
+      ],
+      "subtotal": 9.49,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "callback": true,
+      "eta": "15–20 min",
+      "id": "o_b62710a3a8ee87aa",
+      "status": "COMPLETED",
+      "paid": true,
+      "payment": {
+        "provider": "demo",
+        "intentId": "pi_demo_9b5db74ced4215eb",
+        "amount": 949,
+        "currency": "gbp",
+        "status": "succeeded",
+        "last4": "4242",
+        "paidAt": "2026-06-20T17:33:18.588Z"
+      },
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-20T17:33:16.924Z",
+          "by": "customer"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-20T17:34:06.863Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-20T17:34:30.539Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-20T17:35:58.608Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-20T17:36:00.590Z",
+          "by": "Front Counter (vendor)"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1002",
+      "placedAt": "2026-06-20T17:22:25.951Z",
+      "mode": "Collection",
+      "name": "Abdul",
+      "phone": "+446281315272",
+      "items": [
+        {
+          "id": "steaks:1",
+          "name": "Smoked Out Philly",
+          "price": 10.99,
+          "qty": 1,
+          "lineTotal": 10.99
+        }
+      ],
+      "subtotal": 10.99,
+      "currency": "GBP",
+      "branch": "Infirmary Road",
+      "callback": true,
+      "eta": "15–20 min",
+      "id": "o_bf05bfb50e8efd8c",
+      "status": "REJECTED",
+      "paid": true,
+      "payment": {
+        "provider": "demo",
+        "intentId": "pi_demo_d9fea582031dbd54",
+        "amount": 1099,
+        "currency": "gbp",
+        "status": "succeeded",
+        "last4": "4242",
+        "paidAt": "2026-06-20T17:25:10.517Z"
+      },
+      "driverId": null,
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-20T17:22:25.951Z",
+          "by": "customer"
+        },
+        {
+          "to": "REJECTED",
+          "at": "2026-06-20T17:25:05.273Z",
+          "by": "Front Counter (vendor)"
+        }
+      ]
+    },
+    {
+      "schema": "hh.order/1",
+      "ref": "HH-1001",
+      "placedAt": "2026-06-20T17:20:29.974Z",
+      "mode": "Delivery",
+      "name": "Abdul Basit Mohammed",
+      "phone": "+447459275569",
+      "items": [
+        {
+          "id": "steaks:1",
+          "name": "Smoked Out Philly",
+          "price": 10.99,
+          "qty": 4,
+          "lineTotal": 43.96
+        }
+      ],
+      "subtotal": 43.96,
+      "currency": "GBP",
+      "address": "80 Hoyle St, Sheffield S3 7LG,, G - 180 - D, Student Roost S3",
+      "postcode": "S3 7LG",
+      "eta": "20–30 min",
+      "id": "o_b54f8da66626edcd",
+      "status": "COMPLETED",
+      "paid": false,
+      "payment": null,
+      "driverId": "u_driver1",
+      "history": [
+        {
+          "to": "PENDING",
+          "at": "2026-06-20T17:20:29.974Z",
+          "by": "customer"
+        },
+        {
+          "to": "ACCEPTED",
+          "at": "2026-06-20T17:20:51.249Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-20T17:20:51.249Z",
+          "by": "auto-assign"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-20T17:20:54.535Z",
+          "by": "Front Counter -> Driver — Bilal"
+        },
+        {
+          "to": "COOKING",
+          "at": "2026-06-20T17:20:56.468Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "READY",
+          "at": "2026-06-20T17:21:13.648Z",
+          "by": "Front Counter (vendor)"
+        },
+        {
+          "to": "ASSIGNED",
+          "at": "2026-06-20T17:21:23.525Z",
+          "by": "Front Counter -> Driver — Sam"
+        },
+        {
+          "to": "OUT_FOR_DELIVERY",
+          "at": "2026-06-20T17:21:59.615Z",
+          "by": "Driver — Sam (delivery)"
+        },
+        {
+          "to": "DELIVERED",
+          "at": "2026-06-20T17:22:02.037Z",
+          "by": "Driver — Sam (delivery)"
+        },
+        {
+          "to": "COMPLETED",
+          "at": "2026-06-20T17:22:04.581Z",
+          "by": "Driver — Sam (delivery)"
+        }
+      ]
+    }
+  ],
+  "notifications": [
+    {
+      "id": "n_9a51683c3a5a",
+      "at": "2026-06-24T19:56:28.835Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1012",
+      "orderId": "o_472fea1e9ff298b1",
+      "text": "New order HH-1012 · Collection · £25.47"
+    },
+    {
+      "id": "n_a9bdb2bc72da",
+      "at": "2026-06-24T19:55:29.907Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1011",
+      "orderId": "o_ca5b9052f6821be8",
+      "text": "New order HH-1011 · Collection · £37.96"
+    },
+    {
+      "id": "n_3e7e0f2eb158",
+      "at": "2026-06-24T19:51:39.846Z",
+      "read": false,
+      "type": "assign",
+      "ref": "HH-1009",
+      "orderId": "o_98beae2907648d95",
+      "driverId": "u_42d3fab25a",
+      "text": "FFAVA assigned to HH-1009"
+    },
+    {
+      "id": "n_6dfce1361c7a",
+      "at": "2026-06-24T19:27:08.242Z",
+      "read": false,
+      "type": "assign",
+      "ref": "HH-1010",
+      "orderId": "o_948604fd03f169c7",
+      "driverId": "u_42d3fab25a",
+      "text": "FFAVA assigned to HH-1010"
+    },
+    {
+      "id": "n_9625b5e2075f",
+      "at": "2026-06-24T19:23:29.060Z",
+      "read": false,
+      "type": "assign",
+      "ref": "HH-1010",
+      "orderId": "o_948604fd03f169c7",
+      "driverId": "u_driver1",
+      "text": "Driver auto-assigned to HH-1010"
+    },
+    {
+      "id": "n_cac336302611",
+      "at": "2026-06-24T19:23:21.182Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1010",
+      "orderId": "o_948604fd03f169c7",
+      "text": "New order HH-1010 · Delivery · £93.39"
+    },
+    {
+      "id": "n_2a5c89743331",
+      "at": "2026-06-20T17:49:15.378Z",
+      "read": false,
+      "type": "assign",
+      "ref": "HH-1009",
+      "orderId": "o_98beae2907648d95",
+      "driverId": "u_driver1",
+      "text": "Driver auto-assigned to HH-1009"
+    },
+    {
+      "id": "n_fe671bacf57a",
+      "at": "2026-06-20T17:49:10.312Z",
+      "read": false,
+      "type": "payment",
+      "level": "paid",
+      "ref": "HH-1009",
+      "orderId": "o_98beae2907648d95",
+      "text": "Payment received for HH-1009 · £26.91"
+    },
+    {
+      "id": "n_fa8c133ecba6",
+      "at": "2026-06-20T17:49:09.235Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1009",
+      "orderId": "o_98beae2907648d95",
+      "text": "New order HH-1009 · Delivery · £26.91"
+    },
+    {
+      "id": "n_7b65a7720aec",
+      "at": "2026-06-20T17:48:56.850Z",
+      "read": false,
+      "type": "payment",
+      "level": "paid",
+      "ref": "HH-1008",
+      "orderId": "o_f8b320409cab96bb",
+      "text": "Payment received for HH-1008 · £17.98"
+    },
+    {
+      "id": "n_1841370a77de",
+      "at": "2026-06-20T17:48:55.839Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1008",
+      "orderId": "o_f8b320409cab96bb",
+      "text": "New order HH-1008 · Collection · £17.98"
+    },
+    {
+      "id": "n_8e83aba3c53f",
+      "at": "2026-06-20T17:47:22.356Z",
+      "read": false,
+      "type": "payment",
+      "level": "paid",
+      "ref": "HH-1007",
+      "orderId": "o_b5cae656e20112d9",
+      "text": "Payment received for HH-1007 · £9.49"
+    },
+    {
+      "id": "n_34b86ec94bbf",
+      "at": "2026-06-20T17:47:21.227Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1007",
+      "orderId": "o_b5cae656e20112d9",
+      "text": "New order HH-1007 · Collection · £9.49"
+    },
+    {
+      "id": "n_8ead4c2fd606",
+      "at": "2026-06-20T17:46:43.992Z",
+      "read": false,
+      "type": "payment",
+      "level": "paid",
+      "ref": "HH-1006",
+      "orderId": "o_972f5c4661c583ce",
+      "text": "Payment received for HH-1006 · £9.49"
+    },
+    {
+      "id": "n_22b772ad13ab",
+      "at": "2026-06-20T17:46:43.131Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1006",
+      "orderId": "o_972f5c4661c583ce",
+      "text": "New order HH-1006 · Collection · £9.49"
+    },
+    {
+      "id": "n_edb9dd4a81c5",
+      "at": "2026-06-20T17:34:10.907Z",
+      "read": false,
+      "type": "assign",
+      "ref": "HH-1005",
+      "orderId": "o_eecb7c9429068b6d",
+      "driverId": "u_driver1",
+      "text": "Driver auto-assigned to HH-1005"
+    },
+    {
+      "id": "n_721f0a8e4695",
+      "at": "2026-06-20T17:33:55.220Z",
+      "read": false,
+      "type": "payment",
+      "level": "paid",
+      "ref": "HH-1005",
+      "orderId": "o_eecb7c9429068b6d",
+      "text": "Payment received for HH-1005 · £28.47"
+    },
+    {
+      "id": "n_30ce2a5796e5",
+      "at": "2026-06-20T17:33:53.285Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1005",
+      "orderId": "o_eecb7c9429068b6d",
+      "text": "New order HH-1005 · Delivery · £28.47"
+    },
+    {
+      "id": "n_b60dd97c9094",
+      "at": "2026-06-20T17:33:36.318Z",
+      "read": false,
+      "type": "payment",
+      "level": "paid",
+      "ref": "HH-1004",
+      "orderId": "o_7eb9e487c05b1e78",
+      "text": "Payment received for HH-1004 · £8.49"
+    },
+    {
+      "id": "n_b75b37f16777",
+      "at": "2026-06-20T17:33:35.323Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1004",
+      "orderId": "o_7eb9e487c05b1e78",
+      "text": "New order HH-1004 · Collection · £8.49"
+    },
+    {
+      "id": "n_d20c13fae225",
+      "at": "2026-06-20T17:33:18.588Z",
+      "read": false,
+      "type": "payment",
+      "level": "paid",
+      "ref": "HH-1003",
+      "orderId": "o_b62710a3a8ee87aa",
+      "text": "Payment received for HH-1003 · £9.49"
+    },
+    {
+      "id": "n_5b11dde321e2",
+      "at": "2026-06-20T17:33:16.925Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1003",
+      "orderId": "o_b62710a3a8ee87aa",
+      "text": "New order HH-1003 · Collection · £9.49"
+    },
+    {
+      "id": "n_cae65e348e7b",
+      "at": "2026-06-20T17:25:10.517Z",
+      "read": false,
+      "type": "payment",
+      "level": "paid",
+      "ref": "HH-1002",
+      "orderId": "o_bf05bfb50e8efd8c",
+      "text": "Payment received for HH-1002 · £10.99"
+    },
+    {
+      "id": "n_7f8e86eb7aaf",
+      "at": "2026-06-20T17:22:25.951Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1002",
+      "orderId": "o_bf05bfb50e8efd8c",
+      "text": "New order HH-1002 · Collection · £10.99"
+    },
+    {
+      "id": "n_5393e76b58a7",
+      "at": "2026-06-20T17:21:23.525Z",
+      "read": false,
+      "type": "assign",
+      "ref": "HH-1001",
+      "orderId": "o_b54f8da66626edcd",
+      "driverId": "u_driver1",
+      "text": "Driver — Sam assigned to HH-1001"
+    },
+    {
+      "id": "n_59d73c8bb0ea",
+      "at": "2026-06-20T17:20:54.535Z",
+      "read": false,
+      "type": "assign",
+      "ref": "HH-1001",
+      "orderId": "o_b54f8da66626edcd",
+      "driverId": "u_driver2",
+      "text": "Driver — Bilal assigned to HH-1001"
+    },
+    {
+      "id": "n_4c751ed304ec",
+      "at": "2026-06-20T17:20:51.249Z",
+      "read": false,
+      "type": "assign",
+      "ref": "HH-1001",
+      "orderId": "o_b54f8da66626edcd",
+      "driverId": "u_driver1",
+      "text": "Driver auto-assigned to HH-1001"
+    },
+    {
+      "id": "n_2abb38462614",
+      "at": "2026-06-20T17:20:29.975Z",
+      "read": false,
+      "type": "order",
+      "level": "new",
+      "ref": "HH-1001",
+      "orderId": "o_b54f8da66626edcd",
+      "text": "New order HH-1001 · Delivery · £43.96"
+    }
+  ],
+  "counters": {
+    "order": 1012
+  }
+}

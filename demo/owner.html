@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'">
+<meta name="robots" content="noindex">
+<title>Harlem House — Owner (Manager)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0c0b09;--surface:#171511;--surface-2:#1f1c16;--cream:#f6f1e6;--muted:#b9b09c;--gold:#f2b705;--green:#34d058;--ember:#dc2626;--amber:#f59e0b;--blue:#5aa9ff;--line:rgba(246,241,230,.11);--line-soft:rgba(246,241,230,.06);--r:15px;--ease:cubic-bezier(.22,.7,.25,1)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--cream);font-family:'Space Grotesk',system-ui,sans-serif;min-height:100vh}
+  button{font-family:inherit;cursor:pointer;color:inherit}
+  input,select{font-family:inherit}
+  :focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+  header.bar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:13px clamp(14px,3vw,28px);background:rgba(12,11,9,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .logo{font-family:'Anton',sans-serif;font-size:1.4rem;text-transform:uppercase}.logo b{color:var(--gold)}
+  .role{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:#1a1305;background:var(--gold);padding:4px 9px;border-radius:50px;font-weight:700}
+  .spacer{flex:1}
+  .conn .dot{width:9px;height:9px;border-radius:50%;background:var(--muted);display:inline-block}.conn.live .dot{background:var(--green);box-shadow:0 0 0 4px rgba(52,208,88,.16)}
+  .btn{border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:8px 12px;font-weight:600;font-size:.8rem}
+  .tabs{display:flex;gap:8px;padding:12px clamp(14px,3vw,28px) 0;flex-wrap:wrap}
+  .tab{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:50px;padding:9px 18px;font-weight:700;font-size:.85rem}
+  .tab.on{background:var(--gold);color:#1a1305;border-color:var(--gold)}
+  main{padding:18px clamp(14px,3vw,28px);max-width:1500px;margin:0 auto}
+  .panel{display:none}.panel.on{display:block}
+  h2.sec{font-family:'Anton',sans-serif;font-size:1.1rem;text-transform:uppercase;color:var(--muted);margin:4px 2px 14px;letter-spacing:.04em}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px}
+  .empty{color:var(--muted);padding:8vh 10px;text-align:center}
+  .card{background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden}
+  .card.fresh{animation:pop .5s var(--ease);border-color:rgba(242,183,5,.6)}@keyframes pop{0%{transform:scale(.97)}100%{transform:scale(1)}}
+  .ctop{display:flex;align-items:center;gap:9px;padding:13px 15px;border-bottom:1px solid var(--line-soft)}
+  .ref{font-family:'Anton',sans-serif;font-size:1.2rem;color:var(--gold)}
+  .when{margin-left:auto;font-size:.74rem;color:var(--muted);text-align:right}
+  .badge{font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:6px}
+  .b-mode.delivery{background:rgba(90,169,255,.15);color:var(--blue)}.b-mode.collection{background:rgba(242,183,5,.14);color:var(--gold)}
+  .st{font-size:.62rem;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:6px}
+  .st-PENDING{background:rgba(245,158,11,.16);color:var(--amber)}.st-ACCEPTED{background:rgba(90,169,255,.16);color:var(--blue)}.st-COOKING{background:rgba(242,183,5,.16);color:var(--gold)}.st-READY{background:rgba(52,208,88,.16);color:var(--green)}.st-OUT_FOR_DELIVERY{background:rgba(90,169,255,.16);color:var(--blue)}.st-DELIVERED{background:rgba(52,208,88,.16);color:var(--green)}.st-COMPLETED{background:rgba(120,120,120,.2);color:var(--muted)}.st-REJECTED{background:rgba(220,38,38,.16);color:#ff9b9b}
+  .cbody{padding:12px 15px}
+  .cust{margin:4px 0 8px;font-size:.9rem}.cust b{color:var(--cream)}.cust .row{color:var(--muted);font-size:.82rem}
+  .items{display:flex;flex-direction:column;gap:4px;margin:8px 0}.li{display:flex;gap:8px;font-size:.86rem}.li .q{color:var(--gold);font-weight:700;min-width:24px}.li .nm{flex:1}.li .lt{color:var(--muted)}
+  .tot{display:flex;justify-content:space-between;border-top:1px dashed var(--line-soft);padding-top:8px;font-weight:700}.tot b{font-family:'Anton',sans-serif;color:var(--gold)}
+  .assign{display:flex;gap:6px;align-items:center;margin:9px 0 2px;font-size:.8rem;color:var(--muted)}
+  .assign select{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;color:var(--cream);font-size:.8rem;padding:6px}
+  .acts{display:flex;gap:7px;flex-wrap:wrap;padding:11px 15px;border-top:1px solid var(--line-soft);background:rgba(0,0,0,.18)}
+  .acts button{flex:1;min-width:84px;border:none;border-radius:9px;padding:10px;font-weight:700;font-size:.8rem}
+  .a-go{background:linear-gradient(135deg,var(--gold),#e3a904);color:#1a1305}.a-accept{background:var(--green);color:#06320f}.a-reject{background:transparent;border:1px solid rgba(220,38,38,.5);color:#ff9b9b}
+  /* reports */
+  .rfilter{display:flex;gap:8px;margin-bottom:16px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:13px;margin-bottom:22px}
+  .kpi{background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r);padding:18px}
+  .kpi .n{font-family:'Anton',sans-serif;font-size:2rem;color:var(--gold)}.kpi .l{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+  .twocol{display:grid;grid-template-columns:1fr;gap:18px}@media(min-width:780px){.twocol{grid-template-columns:1fr 1fr}}
+  .box{background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r);padding:18px}
+  .box h3{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+  .bar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:.84rem}
+  .bar .lab{width:84px;color:var(--muted);flex:none}.bar .track{flex:1;background:var(--surface-2);border-radius:6px;overflow:hidden;height:18px}.bar .fill{height:100%;background:linear-gradient(90deg,var(--gold),#ffd23f)}.bar .v{width:64px;text-align:right;color:var(--muted);flex:none}
+  .ti{display:flex;justify-content:space-between;font-size:.88rem;padding:6px 0;border-bottom:1px dashed var(--line-soft)}.ti b{color:var(--gold)}
+  /* staff */
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line-soft)}
+  th{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  td select,td input{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;color:var(--cream);padding:6px 8px;font-size:.84rem}
+  .pill-role{font-size:.66rem;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:50px}
+  .pr-owner{background:rgba(242,183,5,.16);color:var(--gold)}.pr-vendor{background:rgba(90,169,255,.16);color:var(--blue)}.pr-delivery{background:rgba(52,208,88,.16);color:var(--green)}
+  .mini{border:none;border-radius:7px;padding:6px 10px;font-weight:700;font-size:.76rem;margin-right:5px}
+  .mini.warn{background:transparent;border:1px solid rgba(220,38,38,.5);color:#ff9b9b}.mini.ok{background:var(--surface-2);border:1px solid var(--line);color:var(--cream)}
+  .addrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
+  .addrow input,.addrow select{flex:1 1 150px;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;color:var(--cream);padding:10px}
+  .addrow button{flex:1 1 100%;background:linear-gradient(135deg,var(--gold),#e3a904);color:#1a1305;border:none;border-radius:8px;padding:12px;font-weight:700}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--gold);color:#1a1305;font-weight:700;padding:11px 20px;border-radius:50px;opacity:0;transition:.25s;z-index:50}.toast.show{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<header class="bar">
+  <span class="logo">HARLEM<b>HOUSE</b></span><span class="role">Owner · Master</span>
+  <span class="spacer"></span>
+  <span class="conn" id="conn"><span class="dot"></span></span>
+  <span id="who" style="font-size:.82rem;color:var(--muted)"></span>
+  <button class="btn" id="logout">Log out</button>
+</header>
+<div class="tabs">
+  <button class="tab on" data-tab="orders">Live orders</button>
+  <button class="tab" data-tab="reports">Reports</button>
+  <button class="tab" data-tab="staff">Staff &amp; roles</button>
+</div>
+<main>
+  <section class="panel on" id="p-orders">
+    <h2 class="sec">All active orders</h2>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="ordEmpty">No active orders.</div>
+  </section>
+
+  <section class="panel" id="p-reports">
+    <div class="rfilter">
+      <button class="tab on" data-period="day">Today</button>
+      <button class="tab" data-period="month">This month</button>
+      <button class="tab" data-period="year">This year</button>
+    </div>
+    <div class="cards" id="kpis"></div>
+    <div class="twocol">
+      <div class="box"><h3>Revenue over time</h3><div id="buckets"></div></div>
+      <div class="box"><h3>Top items</h3><div id="top"></div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-staff">
+    <h2 class="sec">Staff &amp; roles</h2>
+    <div class="box">
+      <table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="staffBody"></tbody></table>
+      <div class="addrow">
+        <input id="nName" placeholder="Full name">
+        <input id="nUser" placeholder="username">
+        <select id="nRole"><option value="vendor">Vendor (cashier)</option><option value="delivery">Delivery (driver)</option><option value="owner">Owner (manager)</option></select>
+        <input id="nPin" placeholder="PIN 4–6" inputmode="numeric">
+        <button id="addStaff">Add staff</button>
+      </div>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  "use strict";
+  var TOKEN,ROLE,NAME;
+  try{TOKEN=sessionStorage.getItem('hh-staff-token');ROLE=sessionStorage.getItem('hh-staff-role');NAME=sessionStorage.getItem('hh-staff-name');}catch(e){}
+  if(!TOKEN||ROLE!=='owner'){location.replace('/login');return;}
+  var $=function(s){return document.querySelector(s);};var $$=function(s){return [].slice.call(document.querySelectorAll(s));};
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function gbp(n){return '£'+(Math.round(Number(n)*100)/100).toFixed(2);}
+  function tm(iso){try{return new Date(iso).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}catch(e){return'';}}
+  function api(path,opts){opts=opts||{};opts.headers=Object.assign({'Authorization':'Bearer '+TOKEN},opts.headers||{});if(opts.body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(opts.body);opts.method=opts.method||'POST';}return fetch(path,opts).then(function(r){if(r.status===401){location.replace('/login');throw new Error('401');}return r.json();});}
+  var toastT;function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2200);}
+  $('#who').textContent=NAME||'';
+  $('#logout').addEventListener('click',function(){api('/api/auth/logout',{method:'POST'}).catch(function(){});try{sessionStorage.clear();}catch(e){}location.replace('/login');});
+
+  /* tabs */
+  $$('.tab[data-tab]').forEach(function(t){t.addEventListener('click',function(){$$('.tab[data-tab]').forEach(function(x){x.classList.remove('on');});t.classList.add('on');$$('.panel').forEach(function(p){p.classList.remove('on');});$('#p-'+t.dataset.tab).classList.add('on');if(t.dataset.tab==='reports')loadReports();if(t.dataset.tab==='staff')loadStaff();});});
+
+  /* ---- orders (master) ---- */
+  var orders={},drivers=[];
+  var FLOW={PENDING:['ACCEPTED','REJECTED'],ACCEPTED:['COOKING','REJECTED'],COOKING:['READY'],READY:['OUT_FOR_DELIVERY','COMPLETED'],OUT_FOR_DELIVERY:['DELIVERED'],DELIVERED:['COMPLETED']};
+  var LABEL={ACCEPTED:'Accept',REJECTED:'Reject',COOKING:'Start cooking',READY:'Mark ready',OUT_FOR_DELIVERY:'Out for delivery',DELIVERED:'Mark delivered',COMPLETED:'Complete'};
+  function driverName(id){var d=drivers.find(function(x){return x.id===id;});return d?d.name:'';}
+  function actBtns(o){
+    var nexts=(FLOW[o.status]||[]).filter(function(to){ if(to==='OUT_FOR_DELIVERY'&&o.mode!=='Delivery')return false; return true; });
+    return nexts.map(function(to){var c=to==='ACCEPTED'?'a-accept':to==='REJECTED'?'a-reject':'a-go';return '<button class="'+c+'" data-to="'+to+'" data-id="'+o.id+'">'+esc(LABEL[to]||to)+'</button>';}).join('')||'<button class="a-go" disabled>'+esc(o.status.replace(/_/g,' '))+'</button>';
+  }
+  function cardHTML(o){
+    var assign='';
+    if(o.mode==='Delivery'&&['ACCEPTED','COOKING','READY'].indexOf(o.status)>-1){
+      var opts=drivers.map(function(d){return '<option value="'+d.id+'"'+(d.id===o.driverId?' selected':'')+'>'+esc(d.name)+' ('+d.activeJobs+')</option>';}).join('');
+      assign='<div class="assign">🛵 <select data-assign="'+o.id+'"><option value="">— assign —</option>'+opts+'</select></div>';
+    }
+    var dest=o.mode==='Delivery'?(esc(o.postcode||'')+' · '+esc(o.eta||'')):(esc(o.branch||'')+' · '+esc(o.eta||''));
+    return '<div class="ctop"><span class="ref">'+esc(o.ref)+'</span><span class="badge b-mode '+(o.mode==='Delivery'?'delivery':'collection')+'">'+esc(o.mode)+'</span><span class="st st-'+o.status+'">'+esc(o.status.replace(/_/g,' '))+'</span><span class="when">'+tm(o.placedAt)+'<br>'+dest+'</span></div>'+
+      '<div class="cbody">'+
+        '<div>'+(o.paid?'<span class="badge" style="color:var(--green);border:1px solid rgba(52,208,88,.4)">✓ Paid</span>':'<span class="badge" style="color:var(--amber);border:1px solid rgba(245,158,11,.4)">Unpaid</span>')+(o.driverId?' <span class="badge b-mode delivery">🛵 '+esc(driverName(o.driverId))+'</span>':'')+'</div>'+
+        '<div class="cust"><b>'+esc(o.name)+'</b><div class="row">'+esc(o.phone)+(o.address?' · '+esc(o.address):'')+'</div></div>'+
+        '<div class="items">'+o.items.map(function(i){return '<div class="li"><span class="q">'+i.qty+'×</span><span class="nm">'+esc(i.name)+'</span><span class="lt">'+gbp(i.lineTotal)+'</span></div>';}).join('')+'</div>'+
+        '<div class="tot"><span>Total</span><b>'+gbp(o.subtotal)+'</b></div>'+assign+
+      '</div><div class="acts">'+actBtns(o)+'</div>';
+  }
+  function renderOrders(){
+    var ids=Object.keys(orders).filter(function(id){return ['PENDING','ACCEPTED','COOKING','READY','OUT_FOR_DELIVERY','DELIVERED'].indexOf(orders[id].status)>-1;});
+    ids.sort(function(a,b){return new Date(orders[a].placedAt)-new Date(orders[b].placedAt);});
+    var g=$('#grid');g.innerHTML='';
+    ids.forEach(function(id){var el=document.createElement('div');el.className='card'+(orders[id]._fresh?' fresh':'');orders[id]._fresh=false;el.innerHTML=cardHTML(orders[id]);g.appendChild(el);});
+    $('#ordEmpty').style.display=ids.length?'none':'';
+  }
+  document.addEventListener('click',function(e){var b=e.target.closest('button[data-to]');if(b)api('/api/orders/'+b.dataset.id+'/transition',{body:{to:b.dataset.to}}).then(function(j){if(!j.ok)toast(j.error||'Failed');}).catch(function(){});});
+  document.addEventListener('change',function(e){var s=e.target.closest('select[data-assign]');if(s&&s.value)api('/api/orders/'+s.dataset.assign+'/assign',{body:{driverId:s.value}}).then(function(j){toast(j.ok?'Assigned':(j.error||'Failed'));}).catch(function(){});});
+  function loadDrivers(){return api('/api/drivers').then(function(j){if(j.ok)drivers=j.drivers;}).catch(function(){});}
+  function loadOrders(){return api('/api/orders?scope=active').then(function(j){if(j.ok){orders={};j.orders.forEach(function(o){orders[o.id]=o;});renderOrders();}}).catch(function(){});}
+
+  /* ---- reports ---- */
+  var period='day';
+  $$('.tab[data-period]').forEach(function(t){t.addEventListener('click',function(){$$('.tab[data-period]').forEach(function(x){x.classList.remove('on');});t.classList.add('on');period=t.dataset.period;loadReports();});});
+  function loadReports(){
+    api('/api/reports?period='+period).then(function(j){
+      if(!j.ok)return;
+      $('#kpis').innerHTML=
+        '<div class="kpi"><div class="n">'+j.summary.orders+'</div><div class="l">Completed orders</div></div>'+
+        '<div class="kpi"><div class="n">'+gbp(j.summary.revenue)+'</div><div class="l">Revenue</div></div>'+
+        '<div class="kpi"><div class="n">'+gbp(j.summary.avg)+'</div><div class="l">Avg order</div></div>'+
+        '<div class="kpi"><div class="n">'+j.active+'</div><div class="l">Active now</div></div>';
+      var keys=Object.keys(j.buckets);var max=Math.max(1,Math.max.apply(null,keys.map(function(k){return j.buckets[k];})));
+      $('#buckets').innerHTML=keys.length?keys.map(function(k){var v=j.buckets[k];return '<div class="bar"><span class="lab">'+esc(k)+'</span><span class="track"><span class="fill" style="width:'+(v/max*100)+'%"></span></span><span class="v">'+gbp(v)+'</span></div>';}).join(''):'<div class="empty">No completed orders in this period yet.</div>';
+      $('#top').innerHTML=j.topItems.length?j.topItems.map(function(t){return '<div class="ti"><span>'+esc(t.name)+'</span><b>'+t.qty+'</b></div>';}).join(''):'<div class="empty">No data yet.</div>';
+    }).catch(function(){});
+  }
+
+  /* ---- staff ---- */
+  function loadStaff(){
+    api('/api/staff').then(function(j){
+      if(!j.ok)return;
+      $('#staffBody').innerHTML=j.staff.map(function(u){
+        return '<tr data-id="'+u.id+'">'+
+          '<td>'+esc(u.name)+'</td><td>'+esc(u.username)+'</td>'+
+          '<td><select data-role>'+['owner','vendor','delivery'].map(function(r){return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+r+'</option>';}).join('')+'</select></td>'+
+          '<td>'+(u.active?'<span class="pill-role pr-delivery">Active</span>':'<span class="pill-role" style="background:rgba(120,120,120,.2);color:var(--muted)">Off</span>')+'</td>'+
+          '<td><button class="mini ok" data-toggle>'+(u.active?'Deactivate':'Activate')+'</button><button class="mini ok" data-pin>Reset PIN</button><button class="mini warn" data-del>Delete</button></td>'+
+        '</tr>';
+      }).join('');
+    }).catch(function(){});
+  }
+  $('#p-staff').addEventListener('change',function(e){
+    var sel=e.target.closest('select[data-role]');if(!sel)return;var id=sel.closest('tr').dataset.id;
+    api('/api/staff/'+id,{method:'PATCH',body:{role:sel.value}}).then(function(j){toast(j.ok?'Role updated':(j.error||'Failed'));if(!j.ok)loadStaff();loadDrivers();}).catch(function(){});
+  });
+  $('#p-staff').addEventListener('click',function(e){
+    var tr=e.target.closest('tr[data-id]');if(!tr)return;var id=tr.dataset.id;
+    if(e.target.closest('[data-toggle]')){var activate=e.target.textContent==='Activate';api('/api/staff/'+id,{method:'PATCH',body:{active:activate}}).then(function(j){toast(j.ok?'Updated':(j.error||'Failed'));loadStaff();}).catch(function(){});}
+    else if(e.target.closest('[data-pin]')){var pin=prompt('New PIN (4–6 digits):');if(pin)api('/api/staff/'+id,{method:'PATCH',body:{pin:pin}}).then(function(j){toast(j.ok?'PIN reset':(j.error||'Failed'));}).catch(function(){});}
+    else if(e.target.closest('[data-del]')){if(confirm('Delete this staff member?'))api('/api/staff/'+id,{method:'DELETE'}).then(function(j){toast(j.ok?'Deleted':(j.error||'Failed'));loadStaff();}).catch(function(){});}
+  });
+  $('#addStaff').addEventListener('click',function(){
+    var body={name:$('#nName').value,username:$('#nUser').value,role:$('#nRole').value,pin:$('#nPin').value};
+    api('/api/staff',{body:body}).then(function(j){if(!j.ok){toast(j.error||'Failed');return;}toast('Staff added');$('#nName').value='';$('#nUser').value='';$('#nPin').value='';loadStaff();loadDrivers();}).catch(function(){});
+  });
+
+  function connect(){
+    var es=new EventSource('/api/stream?token='+encodeURIComponent(TOKEN));
+    es.addEventListener('open',function(){$('#conn').className='conn live';});
+    es.onerror=function(){$('#conn').className='conn';};
+    es.addEventListener('order.created',function(ev){var o=JSON.parse(ev.data);o._fresh=true;orders[o.id]=o;renderOrders();});
+    es.addEventListener('order.updated',function(ev){var o=JSON.parse(ev.data);orders[o.id]=o;loadDrivers().then(renderOrders);if($('#p-reports').classList.contains('on'))loadReports();});
+  }
+  loadDrivers().then(loadOrders).then(connect);
+})();
+</script>
+</body>
+</html>

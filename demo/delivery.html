@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'">
+<meta name="robots" content="noindex">
+<title>Harlem House — Driver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0c0b09;--surface:#171511;--surface-2:#1f1c16;--cream:#f6f1e6;--muted:#b9b09c;--gold:#f2b705;--green:#34d058;--blue:#5aa9ff;--amber:#f59e0b;--line:rgba(246,241,230,.11);--line-soft:rgba(246,241,230,.06);--r:15px;--ease:cubic-bezier(.22,.7,.25,1)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--cream);font-family:'Space Grotesk',system-ui,sans-serif;min-height:100vh}
+  button{font-family:inherit;cursor:pointer;color:inherit}
+  :focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+  header.bar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;padding:13px clamp(14px,4vw,22px);background:rgba(12,11,9,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .logo{font-family:'Anton',sans-serif;font-size:1.3rem;text-transform:uppercase}.logo b{color:var(--gold)}
+  .role{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:4px 9px;border-radius:50px}
+  .spacer{flex:1}
+  .conn .dot{width:9px;height:9px;border-radius:50%;background:var(--muted);display:inline-block}
+  .conn.live .dot{background:var(--green);box-shadow:0 0 0 4px rgba(52,208,88,.16)}
+  .btn{border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:8px 12px;font-weight:600;font-size:.8rem}
+  main{padding:clamp(14px,4vw,22px);max-width:640px;margin:0 auto}
+  h2.sec{font-family:'Anton',sans-serif;font-size:1.05rem;text-transform:uppercase;color:var(--muted);margin:4px 2px 14px}
+  .empty{color:var(--muted);text-align:center;padding:14vh 10px}
+  .card{background:linear-gradient(165deg,var(--surface),var(--surface-2));border:1px solid var(--line-soft);border-radius:var(--r);margin-bottom:14px;overflow:hidden;box-shadow:0 16px 44px -26px rgba(0,0,0,.8)}
+  .card.fresh{animation:pop .5s var(--ease);border-color:rgba(90,169,255,.6)}
+  @keyframes pop{0%{transform:scale(.98)}100%{transform:scale(1)}}
+  .ctop{display:flex;align-items:center;gap:9px;padding:14px 16px;border-bottom:1px solid var(--line-soft)}
+  .ref{font-family:'Anton',sans-serif;font-size:1.25rem;color:var(--gold)}
+  .st{margin-left:auto;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 9px;border-radius:6px}
+  .st-READY{background:rgba(52,208,88,.16);color:var(--green)}.st-OUT_FOR_DELIVERY{background:rgba(90,169,255,.16);color:var(--blue)}
+  .st-DELIVERED{background:rgba(52,208,88,.16);color:var(--green)}.st-ACCEPTED,.st-COOKING{background:rgba(245,158,11,.16);color:var(--amber)}
+  .body{padding:14px 16px}
+  .addr{font-size:1.02rem;font-weight:600;margin-bottom:4px}
+  .meta{color:var(--muted);font-size:.86rem;margin-bottom:10px}
+  .meta a{color:var(--gold)}
+  .items{font-size:.86rem;color:var(--muted);margin-bottom:10px}
+  .pay{font-size:.66rem;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:5px}
+  .pay.y{color:var(--green);border:1px solid rgba(52,208,88,.4)}.pay.n{color:var(--amber);border:1px solid rgba(245,158,11,.4)}
+  .act{display:block;width:100%;border:none;border-radius:11px;padding:15px;font-weight:700;font-size:1rem;margin-top:6px}
+  .a-go{background:linear-gradient(135deg,var(--blue),#3d86d6);color:#06223f}
+  .a-done{background:var(--green);color:#06320f}
+  .a-wait{background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--gold);color:#1a1305;font-weight:700;padding:11px 20px;border-radius:50px;opacity:0;transition:.25s;z-index:50}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<header class="bar">
+  <span class="logo">HARLEM<b>HOUSE</b></span><span class="role">Driver</span>
+  <span class="spacer"></span>
+  <span class="conn" id="conn"><span class="dot"></span></span>
+  <span id="who" style="font-size:.82rem;color:var(--muted)"></span>
+  <button class="btn" id="logout">Log out</button>
+</header>
+<main>
+  <h2 class="sec">My deliveries</h2>
+  <div id="list"></div>
+  <div class="empty" id="empty">No deliveries assigned to you right now.</div>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  "use strict";
+  var TOKEN,ROLE,NAME;
+  try{TOKEN=sessionStorage.getItem('hh-staff-token');ROLE=sessionStorage.getItem('hh-staff-role');NAME=sessionStorage.getItem('hh-staff-name');}catch(e){}
+  if(!TOKEN||(ROLE!=='delivery'&&ROLE!=='owner')){location.replace('/login');return;}
+  var $=function(s){return document.querySelector(s);};
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function gbp(n){return '£'+(Math.round(Number(n)*100)/100).toFixed(2);}
+  function api(path,opts){opts=opts||{};opts.headers=Object.assign({'Authorization':'Bearer '+TOKEN},opts.headers||{});if(opts.body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(opts.body);opts.method=opts.method||'POST';}return fetch(path,opts).then(function(r){if(r.status===401){location.replace('/login');throw new Error('401');}return r.json();});}
+  $('#who').textContent=NAME||'';
+  $('#logout').addEventListener('click',function(){api('/api/auth/logout',{method:'POST'}).catch(function(){});try{sessionStorage.clear();}catch(e){}location.replace('/login');});
+
+  var orders={},toastT;
+  function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2200);}
+  function action(o){
+    if(o.status==='READY') return {t:'Pick up · out for delivery',to:'OUT_FOR_DELIVERY',c:'a-go'};
+    if(o.status==='OUT_FOR_DELIVERY') return {t:'Mark delivered',to:'DELIVERED',c:'a-done'};
+    if(o.status==='DELIVERED') return {t:'Complete order',to:'COMPLETED',c:'a-done'};
+    return {t:'Preparing in kitchen…',to:'',c:'a-wait'};
+  }
+  function cardHTML(o){
+    var a=action(o);
+    return '<div class="ctop"><span class="ref">'+esc(o.ref)+'</span><span class="st st-'+o.status+'">'+esc(o.status.replace(/_/g,' '))+'</span></div>'+
+      '<div class="body">'+
+        '<div class="addr">'+esc(o.address||'—')+'</div>'+
+        '<div class="meta">'+esc(o.postcode||'')+' · ETA '+esc(o.eta||'')+'<br><b>'+esc(o.name)+'</b> · <a href="tel:'+esc(o.phone)+'">'+esc(o.phone)+'</a></div>'+
+        '<div class="items">'+o.items.map(function(i){return i.qty+'× '+esc(i.name);}).join(', ')+'</div>'+
+        '<div style="margin-bottom:8px"><span class="pay '+(o.paid?'y':'n')+'">'+(o.paid?'✓ Paid online — '+gbp(o.subtotal):'Collect '+gbp(o.subtotal)+' on delivery')+'</span></div>'+
+        '<button class="act '+a.c+'"'+(a.to?' data-to="'+a.to+'"':' disabled')+' data-id="'+o.id+'">'+esc(a.t)+'</button>'+
+      '</div>';
+  }
+  function render(){
+    var ids=Object.keys(orders).filter(function(id){return ['ACCEPTED','COOKING','READY','OUT_FOR_DELIVERY','DELIVERED'].indexOf(orders[id].status)>-1;});
+    ids.sort(function(a,b){return new Date(orders[a].placedAt)-new Date(orders[b].placedAt);});
+    var L=$('#list');L.innerHTML='';
+    ids.forEach(function(id){var el=document.createElement('div');el.className='card'+(orders[id]._fresh?' fresh':'');orders[id]._fresh=false;el.innerHTML=cardHTML(orders[id]);L.appendChild(el);});
+    $('#empty').style.display=ids.length?'none':'';
+  }
+  document.addEventListener('click',function(e){var b=e.target.closest('button[data-to]');if(b)api('/api/orders/'+b.dataset.id+'/transition',{body:{to:b.dataset.to}}).then(function(j){if(!j.ok)toast(j.error||'Failed');else toast('Updated');}).catch(function(){});});
+  function load(){api('/api/orders?scope=active').then(function(j){if(j.ok){orders={};j.orders.forEach(function(o){orders[o.id]=o;});render();}}).catch(function(){});}
+  function connect(){
+    var es=new EventSource('/api/stream?token='+encodeURIComponent(TOKEN));
+    es.addEventListener('open',function(){$('#conn').className='conn live';});
+    es.onerror=function(){$('#conn').className='conn';};
+    es.addEventListener('order.updated',function(ev){var o=JSON.parse(ev.data);
+      // only my jobs (owner sees all)
+      var mine = ROLE==='owner' || o.driverId; // server already scopes list; for live, refetch to stay correct
+      load();
+    });
+    es.addEventListener('order.created',function(){/* not mine yet */});
+  }
+  load(); connect();
+})();
+</script>
+</body>
+</html>
